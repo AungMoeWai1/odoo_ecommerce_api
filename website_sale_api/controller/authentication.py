@@ -2,13 +2,14 @@
 registration, profile retrieval, and password management."""
 
 # pylint:disable=too-few-public-methods,import-error,broad-exception-caught
+
 import json
 
 from odoo import http
 from odoo.exceptions import ValidationError
 from odoo.http import request
 
-from ..schemas.auth_schema import AuthResponse, ProfileResponse, UserData
+from ..schemas.auth_schema import AuthResponse, UserData
 from ..services.auth_service import get_auth_service
 from ..services.token_service import JWTService, get_current_user, jwt_required
 from .base import BaseAPI
@@ -61,28 +62,6 @@ class AuthController(BaseAPI):
             return self._error(message=str(e), code=400)
         except Exception as e:
             return self._error(message=str(e), code=500)
-
-    @http.route(
-        "/api/auth/profile", type="http", auth="public", methods=["GET"], csrf=False
-    )
-    @jwt_required
-    def get_profile(self):
-        """Get current user profile"""
-        try:
-            user = get_current_user()
-            data = ProfileResponse(
-                id=user.id,
-                name=user.name,
-                email=user.email,
-                login=user.login,
-                active=user.active,
-                company_id=user.company_id.id,
-                company_name=user.company_id.name,
-            )
-
-            return self._success(data=data.model_dump())
-        except ValidationError as e:
-            return self._error(message=str(e), code=400)
 
     @http.route(
         "/api/auth/logout", type="http", auth="public", methods=["POST"], csrf=False

@@ -13,6 +13,7 @@ class UserData(BaseModel):
     name: str
     email: str
     login: str
+    phone: Optional[str | bool] = None
 
 
 class AuthResponse(BaseModel):
@@ -20,11 +21,3 @@ class AuthResponse(BaseModel):
 
     token: Optional[str] = None
     user: Optional[UserData] = None
-
-
-class ProfileResponse(UserData):
-    """Response schema for user profile endpoint"""
-
-    active: Optional[bool] = False
-    company_id: Optional[int] = None
-    company_name: Optional[str] = None
