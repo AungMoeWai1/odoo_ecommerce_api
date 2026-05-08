@@ -14,10 +14,10 @@ class ProfileService:
         """Get user profile information"""
         partner = user.partner_id
 
-        if not partner or not partner.exists():
+        if not partner:
             raise ValidationError("Partner not found")
 
-        data = ProfileResponse(
+        return ProfileResponse(
             id=user.id,
             login=user.login,
             name=user.name,
@@ -29,14 +29,13 @@ class ProfileService:
             company_name=partner.company_id.name,
             image_url=f"/web/image/res.users/{user.id}/image_128",
         )
-        return data
 
     def update_profile(self, user, data):
         """Update user profile with the provided data"""
 
         partner = user.partner_id
 
-        if not partner or not partner.exists():
+        if not partner:
             raise ValidationError("Partner not found")
 
         partner_vals = {}
@@ -55,7 +54,7 @@ class ProfileService:
 
         partner = user.partner_id
 
-        if not partner or not partner.exists():
+        if not partner:
             raise ValidationError("Partner not found")
 
         if not file:

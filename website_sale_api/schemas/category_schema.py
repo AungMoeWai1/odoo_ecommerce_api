@@ -15,7 +15,6 @@ class CategoryData(BaseModel):
     name: str
     parent_id: Optional[int] = None
     child_id: Optional[List[int]] = None
-    # parent_name: Optional[str] = None
     image_256: Optional[str] = None
 
 

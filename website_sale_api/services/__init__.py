@@ -8,4 +8,5 @@ from . import (
     product_service,
     token_service,
     profile_service,
+    address_service,
 )

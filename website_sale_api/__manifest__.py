@@ -7,9 +7,7 @@
     "website": "https://www.smeintellect.com",
     "license": "LGPL-3",
     "depends": ["web", "product", "website_sale"],
-    "external_dependencies": {
-        "python": ["PyJWT", "pydantic"]
-    },
+    "external_dependencies": {"python": ["PyJWT", "pydantic"]},
     "data": [],
     "installable": True,
     "application": False,
