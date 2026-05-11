@@ -9,4 +9,5 @@ from . import (
     token_service,
     profile_service,
     address_service,
+    shipping_method_service,
 )
