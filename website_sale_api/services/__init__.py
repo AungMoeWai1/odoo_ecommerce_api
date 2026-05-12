@@ -10,4 +10,6 @@ from . import (
     profile_service,
     address_service,
     shipping_method_service,
+    website_service,
+    wishlist_service,
 )

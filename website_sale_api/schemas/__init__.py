@@ -7,4 +7,6 @@ from . import (
     product_schema,
     profile_schema,
     shipping_method_schema,
+    website_schema,
+    wishlist_schema,
 )
