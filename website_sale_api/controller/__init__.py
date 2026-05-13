@@ -6,8 +6,9 @@ from . import (
     category,
     product,
     profile,
-    adderss,
+    address,
     shipping_method,
     website,
     wishlist,
+    order,
 )

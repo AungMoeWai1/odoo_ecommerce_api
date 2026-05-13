@@ -1,7 +1,6 @@
 """API controller for website-related requests."""
 
 # pylint: disable=import-error,
-
 from odoo import http
 from odoo.exceptions import ValidationError
 from .base import BaseAPI

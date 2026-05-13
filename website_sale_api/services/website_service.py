@@ -23,9 +23,7 @@ class WebsiteService:
                 )
             )
 
-        return WebsiteResponse(
-            data=result
-        )
+        return WebsiteResponse(data=result)
 
 
 def get_website_service():

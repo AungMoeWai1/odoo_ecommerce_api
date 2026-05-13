@@ -9,4 +9,5 @@ from . import (
     shipping_method_schema,
     website_schema,
     wishlist_schema,
+    order_schema,
 )

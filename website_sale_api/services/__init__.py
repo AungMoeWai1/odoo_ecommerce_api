@@ -12,4 +12,5 @@ from . import (
     shipping_method_service,
     website_service,
     wishlist_service,
+    order_service,
 )
