@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 class ShippingMethodService:
     """Service class for managing shipping methods"""
 
-    def get_shipping_method(self, user):
+    def get_shipping_methods(self, user):
         """Get available shipping methods for the user's latest sale order"""
 
         partner = user.partner_id
@@ -47,7 +47,8 @@ class ShippingMethodService:
         for carrier in shipping_methods:
             price = 0.0
             try:
-                if carrier.delivery_type in ["fixed", "base_on_rule"]:
+                # here without doing hard coding for fixed it need to get from the backend.
+                if carrier.delivery_type in ("fixed", "base_on_rule"):
                     rate = carrier.rate_shipment(order)
                     if rate.get("success"):
                         price = rate.get("price", 0.0)

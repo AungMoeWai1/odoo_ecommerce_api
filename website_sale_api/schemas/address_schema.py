@@ -1,7 +1,7 @@
 """Schemas for shipping address responses in the Odoo e-commerce API."""
 
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class Country(BaseModel):
@@ -16,13 +16,22 @@ class AddressLine(BaseModel):
 
     id: int
     name: str
-    phone: Optional[str | bool] = None
+    phone: Optional[str] = None
     street: Optional[str] = None
     city: Optional[str] = None
     zip: Optional[str] = None
     type: Optional[str | bool] = None
     is_parent: bool = False
     country: Optional[Country] = None
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def sanitize(cls, v, info):
+        """Change value to None"""
+        # Skip validation for is_parent field
+        if info.field_name == "is_parent":
+            return v
+        return v or None
 
 
 class ShippingAddressResponse(BaseModel):

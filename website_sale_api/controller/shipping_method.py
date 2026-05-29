@@ -11,13 +11,13 @@ class ShippingMethodAPI(BaseAPI):
     """Controller class for handling shipping method related API endpoints"""
 
     @http.route(
-        "/api/shipping-method", type="http", auth="none", methods=["GET"], csrf=False
+        "/api/shipping-methods", type="http", auth="none", methods=["GET"], csrf=False
     )
     @jwt_required
-    def get_shipping_method(self):
+    def get_shipping_methods(self):
         """Endpoint to retrieve available shipping methods for the current user's latest sale order."""
 
         user = get_current_user()
         return self.handle(
-            lambda: get_shipping_method_service().get_shipping_method(user=user)
+            lambda: get_shipping_method_service().get_shipping_methods(user=user)
         )

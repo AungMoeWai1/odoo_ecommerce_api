@@ -12,7 +12,7 @@ class ProductAPI(BaseAPI):
     """Controller for product-related endpoints"""
 
     @http.route(
-        "/api/v1/products", type="http", auth="public", methods=["GET"], csrf=False
+        "/api/products", type="http", auth="public", methods=["GET"], csrf=False
     )
     def get_products(self, **kwargs):
         """Retrieve a list of products with pagination and sorting"""
@@ -21,7 +21,7 @@ class ProductAPI(BaseAPI):
         return self._success(**result.model_dump())
 
     @http.route(
-        "/api/v1/products/<int:product_id>",
+        "/api/products/<int:product_id>",
         type="http",
         auth="public",
         methods=["GET"],
