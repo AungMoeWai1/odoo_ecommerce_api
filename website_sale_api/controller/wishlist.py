@@ -5,11 +5,12 @@
 import json
 
 from odoo import http
-from odoo.http import request
 from odoo.exceptions import ValidationError
-from .base import BaseAPI
-from ..services.token_service import jwt_required, get_current_user
+from odoo.http import request
+
+from ..services.token_service import get_current_user, jwt_required
 from ..services.wishlist_service import get_wishlist_service
+from .base import BaseAPI
 
 
 class WishlistAPI(BaseAPI):

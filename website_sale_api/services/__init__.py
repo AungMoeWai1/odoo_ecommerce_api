@@ -3,15 +3,6 @@
 from . import (
     auth_service,
     base_service,
-    categroy_service,
-    pagination_service,
-    product_service,
-    token_service,
     profile_service,
-    address_service,
-    shipping_method_service,
-    website_service,
-    wishlist_service,
-    order_service,
-    review_service,
+    token_service,
 )

@@ -4,11 +4,7 @@
 
 from datetime import datetime
 from typing import Optional
-
-from pydantic import BaseModel
-
 from .pagination import PaginatedResponse
-
 
 class ReviewLineData(BaseModel):
     """Schema for individual review data"""

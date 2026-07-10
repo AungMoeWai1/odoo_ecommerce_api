@@ -1,22 +1,25 @@
 """Schema definitions for Product model."""
 
 # pylint:disable=too-few-public-methods
-from typing import Optional, List, Dict
-from pydantic import BaseModel, field_validator
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional
 
 from .pagination import PaginatedResponse
 
 
-class ProductVariantData(BaseModel):
+@dataclass
+class ProductVariantData:
     """Schema for individual product variant data"""
+
     id: int
     name: str
     price: float
-    stock_qty: Optional[int] = None
     attributes: Dict[str, str]
+    stock_qty: Optional[int] = None
 
 
-class ProductData(BaseModel):
+@dataclass
+class ProductData:
     """Schema for individual product data"""
 
     id: int
@@ -29,6 +32,7 @@ class ProductData(BaseModel):
     discount_amount: Optional[float] = None
 
     currency: Optional[str] = None
+    currency_id: Optional[int] = None
 
     category_id: Optional[int] = None
     category_name: Optional[str] = None
@@ -39,20 +43,11 @@ class ProductData(BaseModel):
     rating: Optional[float] = 0.0
     review_count: Optional[int] = 0
 
-    attributes: List[str] = []
-
-    images: List[str] = []
-
-    variants: List[ProductVariantData] = []
-
-    @field_validator("*", mode="before")
-    @classmethod
-    def false_to_none(cls, v):
-        """
-        Converts a value of False to None, otherwise returns the original value."""
-
-        return None if v is False else v
+    attributes: List[str] = field(default_factory=list)
+    images: List[str] = field(default_factory=list)
+    variants: List[ProductVariantData] = field(default_factory=list)
 
 
+@dataclass
 class ProductResponse(PaginatedResponse[ProductData]):
     """Response schema for Product model"""

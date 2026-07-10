@@ -1,9 +1,8 @@
 """Authentication and user management service for the e-commerce API."""
 
-# pylint:disable=import-error,broad-exception-caught
 import json
 
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessDenied, ValidationError
 from odoo.http import request
 
 
@@ -12,104 +11,53 @@ class AuthService:
 
     def authenticate_user(self):
         """Authenticate user and return user record"""
-        params = json.loads(request.httprequest.data)
-        login = params.get("login")
-        password = params.get("password")
-
-        if not login or not password:
-            raise ValidationError("login and password are required")
-
         try:
-            credential = {"login": login, "password": password, "type": "password"}
+            credential = json.loads(request.httprequest.data)
+            credential["type"] = "password"
 
             auth_info = request.session.authenticate(request.env, credential)
-            uid = auth_info.get("uid")
+            return {"uid": auth_info["uid"], "login": credential["login"]}
 
-            if uid:
-                user = request.env["res.users"].sudo().browse(uid)
-            else:
-                raise ValidationError("Invalid login or password")
-
-        except Exception as e:
-            raise ValidationError("login and password are incorrect") from e
-
-        return user
+        except (json.JSONDecodeError, KeyError, Exception):
+            return False
 
     def create_user(self):
         """Create a new portal user"""
         params = json.loads(request.httprequest.data)
-        name = params.get("name")
-        login = params.get("login")
-        email = params.get("email")
-        password = params.get("password")
 
-        if not all([name, login, email, password]):
-            raise ValidationError("Missing required fields")
-        res_users = request.env["res.users"].sudo()
-        self._check_existing_user(res_users, login, email)
         try:
             # Create portal user using signup
-            res_users.signup(
+            request.env["res.users"].sudo().signup(
                 {
-                    "name": name,
-                    "login": login,
-                    "email": email,
-                    "password": password,
+                    "name": params["name"],
+                    "login": params["login"],
+                    "password": params["password"],
                 }
             )
-            return res_users.search([("login", "=", login)], limit=1)
+            user = request.env["res.users"].search(
+                [("login", "=", params["login"])], limit=1
+            )
+            return {"uid": user.id, "login": user.login}
 
         except Exception as e:
             return ValidationError(e)
 
-    def _check_existing_user(self, users, login, email):
-        """Check existing user"""
-
-        existing = users.search(
-            ["|", ("login", "=", login), ("email", "=", email)], limit=1
-        )
-
-        if existing:
-            raise ValidationError("User already exists")
-
-    def change_user_password(self, user, old_password, new_password):
+    def change_user_password(self):
         """Change password after validating old password"""
+        payload = json.loads(request.httprequest.data)
 
-        if not old_password or not new_password:
-            raise ValidationError("Old password and new password are required")
-
-        try:
-            # verify old password
-            request.session.authenticate(
-                request.env,
-                {"login": user.login, "password": old_password, "type": "password"},
+        # Check if passwords are identical
+        if self._check_password_identity(payload):
+            raise ValidationError(
+                "The old password and new password must not be identical."
             )
 
-            # update new password
-            user.sudo().write({"password": new_password})
+        # Change password (raises exceptions on failure)
+        user = request.authenticated_user
+        user.sudo().change_password(
+            payload.get("old_password"), payload.get("new_password")
+        )
+        return True
 
-            return True
-
-        except Exception:
-            return False
-
-    # def validate_user_token(self, token):
-    #     """Validate refresh token and get user"""
-    #     # Import here to avoid circular imports
-    #     from ..services.token_service import JWTService
-    #
-    #     try:
-    #         uid, payload = JWTService.get_user_from_token(token)
-    #         user = request.env['res.users'].sudo().browse(uid)
-    #
-    #         if user.exists():
-    #             return user, None
-    #         return None, "User not found"
-    #
-    #     except Exception as e:
-    #         return None, "Invalid or expired refresh token"
-
-
-def get_auth_service():
-    """Factory method to get AuthService instance"""
-    return AuthService()
+    def _check_password_identity(self, payload):
+        return payload.get("new_password") == payload.get("old_password")

@@ -2,13 +2,7 @@
 
 from . import (
     auth_schema,
-    category_schema,
     pagination,
     product_schema,
     profile_schema,
-    shipping_method_schema,
-    website_schema,
-    wishlist_schema,
-    order_schema,
-    review_schema,
 )

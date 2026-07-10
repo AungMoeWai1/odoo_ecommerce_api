@@ -1,5 +1,4 @@
-"""JWT Token Service - Handle all token operations and
-authentication middleware."""
+"""JWT Token Service - Handle all token operations and authentication middleware."""
 
 # pylint:disable=import-error,raise-missing-from,broad-exception-caught
 from datetime import datetime, timedelta
@@ -8,114 +7,134 @@ from functools import wraps
 import jwt
 from odoo.exceptions import AccessDenied
 from odoo.http import request
-from odoo.tools import config
 
-
-def _get_secret():
-    """Return secret key for JWT encoding/decoding"""
-    return config.get(
-        "jwt_secret_key",
-        "9f3a8c2e7b6a1d4f9e3c8a2b7c6d5e4f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4",
-    )
-
-
-def _get_algorithm():
-    """Return algorithm for JWT encoding/decoding"""
-    return config.get("jwt_algorithm", "HS256")
-
-
-def _get_expiry_minutes():
-    """Return expiry time for JWT tokens"""
-    return int(config.get("jwt_ expiry_minutes", 60))
+JWT_EXPIRY_MINUTES = 60
+JWT_ALGORITHM = "HS256"
+JWT_SECRET_KEY = "9f3a8c2e7b6a1d4f9e3c8a2b7c6d5e4f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
 
 
 # ============ TOKEN OPERATIONS ============
 class JWTService:
     """JWT Token Service - Handle all token operations"""
 
-    @staticmethod
-    def generate_token(user):
-        """Generate JWT token for authenticated user"""
-        payload = {
-            "uid": user.id,
-            "email": user.email,
-            "exp": datetime.utcnow() + timedelta(minutes=_get_expiry_minutes()),
-            "iat": datetime.utcnow(),
-        }
-
-        return jwt.encode(payload, _get_secret(), algorithm=_get_algorithm())
-
-    @staticmethod
-    def verify_token(token):
-        """Verify and decode JWT token"""
+    def _verify_token(self, token):
+        """
+        Verify and decode JWT token (INSTANCE METHOD)
+        - Only called internally within this class
+        - Uses self for potential future extensions
+        """
         try:
-            return jwt.decode(token, _get_secret(), algorithms=[_get_algorithm()])
+            return jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         except jwt.ExpiredSignatureError:
             raise AccessDenied("Token has expired")
         except jwt.InvalidTokenError:
             raise AccessDenied("Invalid token")
 
-    @staticmethod
-    def get_user_from_token(token):
-        """Extract user ID and payload from token"""
-        payload = JWTService.verify_token(token)
+    def get_user_from_token(self, token):
+        """
+        Extract user ID from token (INSTANCE METHOD)
+        - Called by jwt_required decorator
+        - Can be called by other classes if needed
+        - Uses self._verify_token()
+        """
+        payload = self._verify_token(token)
         uid = payload.get("uid")
         if not uid:
             raise AccessDenied("Invalid token payload: missing user ID")
-        return uid, payload
+        return uid
 
+    # ============ CLASS METHODS (Need class access) ============
 
-def jwt_required(func):
-    """Decorator to protect routes with JWT authentication"""
+    @classmethod
+    def generate_token(cls, user):
+        """
+        Generate JWT token (CLASS METHOD)
+        - Called by controllers to create new tokens
+        - Uses class constants and class methods
+        """
+        payload = {
+            "uid": user["uid"],
+            "login": user["login"],
+            "website_id": cls._get_website_id(),
+            "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRY_MINUTES),
+            "iat": datetime.utcnow(),
+        }
+        return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        """Decorator to protect routes with JWT authentication"""
-        auth_header = request.httprequest.headers.get("Authorization", "")
+    @classmethod
+    def _get_website_id(cls):
+        """
+        Get current website ID (INTERNAL CLASS METHOD)
+        - Only called internally by generate_token
+        - Not intended for external use
+        """
+        website = cls._get_current_website()
+        return website.id if website else False
 
-        if not auth_header or not auth_header.startswith("Bearer "):
-            return request.make_json_response(
-                {
-                    "status": "fail",
-                    "message": "Missing or invalid Authorization header",
-                },
-                status=401,
-            )
+    @classmethod
+    def _get_current_website(cls):
+        """
+        Fetch current website (INTERNAL CLASS METHOD)
+        - Only called internally by _get_website_id
+        - Not intended for external use
+        """
+        domain = request.httprequest.host
+        return (
+            request.env["website"]
+            .sudo()
+            .search(["|", ("domain", "=", f"http://{domain}"), (1, "=", 1)], limit=1)
+        )
 
-        token = auth_header.split(" ")[1]
+    # ============ STATIC METHODS (Don't need class or instance) ============
 
-        try:
-            uid, payload = JWTService.get_user_from_token(token)
+    @staticmethod
+    def jwt_required(func):
+        """
+        JWT Authentication Decorator (STATIC METHOD)
+        - Used as decorator on routes
+        - Doesn't need class or instance state
+        - Creates instance internally when needed
+        """
 
-            user = request.env["res.users"].sudo().browse(uid)
-            if not user.exists():
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            auth_header = request.httprequest.headers.get("Authorization", "")
+
+            if not auth_header or not auth_header.startswith("Bearer "):
                 return request.make_json_response(
-                    {"status": "fail", "message": "User no longer exists"}, status=401
+                    {
+                        "status": "fail",
+                        "message": "Missing or invalid Authorization header",
+                    },
+                    status=401,
                 )
 
-            # Attach user
-            request.authenticated_user = user
-            request.token_payload = payload
+            token = auth_header.split(" ")[1]
 
-            request.update_env(user=uid)
+            try:
+                # Create instance to use get_user_from_token
+                uid = JWTService().get_user_from_token(token)
 
-        except AccessDenied as e:
-            return request.make_json_response(
-                {"status": "fail", "message": str(e)}, status=401
-            )
+                user = request.env["res.users"].sudo().browse(uid)
+                if not user.exists():
+                    return request.make_json_response(
+                        {"status": "fail", "message": "User no longer exists"},
+                        status=401,
+                    )
 
-        except Exception as e:
-            return request.make_json_response(
-                {"status": "fail", "message": f"Authentication failed: {str(e)}"},
-                status=401,
-            )
+                # Attach user and payload
+                request.authenticated_user = user
 
-        return func(*args, **kwargs)
+            except AccessDenied as e:
+                return request.make_json_response(
+                    {"status": "fail", "message": str(e)}, status=401
+                )
+            except Exception as e:
+                return request.make_json_response(
+                    {"status": "fail", "message": f"Authentication failed: {str(e)}"},
+                    status=401,
+                )
 
-    return wrapper
+            return func(*args, **kwargs)
 
-
-# ============ HELPER FUNCTIONS ============
-def get_current_user():
-    """Get currently authenticated user"""
-    return getattr(request, "authenticated_user", None)
+        return wrapper

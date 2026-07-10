@@ -18,7 +18,7 @@ class ProductAPI(BaseAPI):
         """Retrieve a list of products with pagination and sorting"""
         result = get_product_service().get_products(kwargs)
 
-        return self._success(**result.model_dump())
+        return self._success(result)
 
     @http.route(
         "/api/products/<int:product_id>",

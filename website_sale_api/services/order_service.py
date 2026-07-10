@@ -3,11 +3,12 @@
 # pylint: disable=import-error, too-few-public-methods
 
 from odoo.exceptions import ValidationError
+
 from ..schemas.order_schema import (
-    OrderData,
-    OrderLineData,
-    OrderDataResponse,
     CurrencyData,
+    OrderData,
+    OrderDataResponse,
+    OrderLineData,
 )
 from .base_service import BaseService
 from .pagination_service import PaginationService

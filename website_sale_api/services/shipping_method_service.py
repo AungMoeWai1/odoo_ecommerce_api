@@ -2,8 +2,10 @@
 
 # pylint: disable=too-few-public-methods, import-error,too-many-arguments,line-too-long,broad-exception-caught
 import logging
-from odoo.http import request
+
 from odoo.exceptions import ValidationError
+from odoo.http import request
+
 from ..schemas.shipping_method_schema import ShippingMethodSchema
 
 _logger = logging.getLogger(__name__)

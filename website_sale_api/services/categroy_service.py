@@ -3,10 +3,10 @@
 # pylint:disable=too-few-public-methods,import-error, too-many-locals
 
 from ..schemas.category_schema import (
-    ProductData,
     CategoryData,
     CategoryResponse,
     ChildCategoryData,
+    ProductData,
 )
 from .base_service import BaseService
 from .pagination_service import PaginationService

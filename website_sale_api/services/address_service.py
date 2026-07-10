@@ -1,9 +1,10 @@
 """Service for managing shipping addresses in the Odoo e-commerce API."""
 
 # pylint: disable=too-few-public-methods, import-error,too-many-arguments,too-many-positional-arguments,redefined-builtin,raise-missing-from,consider-using-in
-from odoo.http import request
 from odoo.exceptions import ValidationError
-from ..schemas.address_schema import ShippingAddressResponse, AddressLine
+from odoo.http import request
+
+from ..schemas.address_schema import AddressLine, ShippingAddressResponse
 
 
 class ShippingAddressService:

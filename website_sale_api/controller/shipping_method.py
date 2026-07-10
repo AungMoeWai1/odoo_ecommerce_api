@@ -2,9 +2,10 @@
 
 # pylint: disable=too-few-public-methods, import-error,too-many-arguments,line-too-long
 from odoo import http
-from .base import BaseAPI
-from ..services.token_service import get_current_user, jwt_required
+
 from ..services.shipping_method_service import get_shipping_method_service
+from ..services.token_service import get_current_user, jwt_required
+from .base import BaseAPI
 
 
 class ShippingMethodAPI(BaseAPI):

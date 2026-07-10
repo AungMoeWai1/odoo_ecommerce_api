@@ -3,6 +3,7 @@
 # pylint: disable=import-error
 from odoo import http
 from odoo.exceptions import ValidationError
+
 from ..services.review_service import get_review_service
 from .base import BaseAPI
 

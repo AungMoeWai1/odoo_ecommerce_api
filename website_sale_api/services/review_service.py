@@ -2,7 +2,7 @@
 
 # pylint: disable=too-few-public-methods
 
-from ..schemas.review_schema import ReviewLineData, ReviewDataResponse
+from ..schemas.review_schema import ReviewDataResponse, ReviewLineData
 from .base_service import BaseService
 from .pagination_service import PaginationService
 

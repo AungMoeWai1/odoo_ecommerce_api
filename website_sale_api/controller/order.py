@@ -4,9 +4,10 @@
 
 from odoo import http
 from odoo.exceptions import ValidationError
+
 from ..services.order_service import get_order_service
+from ..services.token_service import get_current_user, jwt_required
 from .base import BaseAPI
-from ..services.token_service import jwt_required, get_current_user
 
 
 class OrderController(BaseAPI):

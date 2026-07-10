@@ -1,6 +1,7 @@
 """Schema definition for shipping methods in the Odoo eCommerce API."""
 
 from typing import Optional
+
 from pydantic import BaseModel
 
 

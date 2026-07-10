@@ -2,8 +2,9 @@
 
 # pylint: disable=too-few-public-methods, import-error
 
-from odoo.http import request
 from odoo.exceptions import ValidationError
+from odoo.http import request
+
 from ..schemas.wishlist_schema import WishlistData, WishlistResponse
 
 

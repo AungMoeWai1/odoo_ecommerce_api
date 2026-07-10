@@ -1,17 +1,14 @@
 """Authentication controller for handling user login,
 registration, profile retrieval, and password management."""
 
-# pylint:disable=too-few-public-methods,import-error,broad-exception-caught
-
-import json
-
+# pylint:disable=too-few-public-methods,import-error
 from odoo import http
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessDenied, ValidationError
 from odoo.http import request
 
-from ..schemas.auth_schema import AuthResponse, UserData
-from ..services.auth_service import get_auth_service
-from ..services.token_service import JWTService, get_current_user, jwt_required
+from ..schemas.auth_schema import AuthResponse
+from ..services.auth_service import AuthService
+from ..services.token_service import JWTService
 from .base import BaseAPI
 
 
@@ -23,23 +20,13 @@ class AuthController(BaseAPI):
     )
     def login(self):
         """Authenticate user and return JWT token"""
-        try:
-            user = get_auth_service().authenticate_user()
+        user = AuthService().authenticate_user()
 
-            token = JWTService.generate_token(user=user)
+        if not user:
+            return self._error(message="Login & Password Incorrect!", code=401)
 
-            data = AuthResponse(
-                token=token,
-                user=UserData(
-                    id=user.id, name=user.name, email=user.email, login=user.login
-                ),
-            )
-            return self._success(**data.model_dump())
-
-        except ValidationError as e:
-            return self._error(message=str(e), code=400)
-        except Exception as e:
-            return self._error(message=e, code=500)
+        token = JWTService.generate_token(user=user)
+        return self._success(AuthResponse(token=token))
 
     @http.route(
         "/api/auth/register", type="http", auth="public", methods=["POST"], csrf=False
@@ -47,17 +34,15 @@ class AuthController(BaseAPI):
     def register(self):
         """Create a new user and return JWT token"""
         try:
-            user = get_auth_service().create_user()
+            user = AuthService().create_user()
 
             token = JWTService.generate_token(user=user)
 
-            data = AuthResponse(
-                token=token,
-                user=UserData(
-                    id=user.id, name=user.name, email=user.email, login=user.login
-                ),
+            return self._success(
+                AuthResponse(
+                    token=token,
+                )
             )
-            return self._success(**data.model_dump())
         except ValidationError as e:
             return self._error(message=str(e), code=400)
         except Exception as e:
@@ -66,7 +51,7 @@ class AuthController(BaseAPI):
     @http.route(
         "/api/auth/logout", type="http", auth="public", methods=["POST"], csrf=False
     )
-    @jwt_required
+    @JWTService.jwt_required
     def logout(self):
         """Logout endpoint"""
         return self._success(message="Logout successful")
@@ -74,20 +59,17 @@ class AuthController(BaseAPI):
     @http.route(
         "/api/auth/refresh", type="http", auth="public", methods=["POST"], csrf=False
     )
-    @jwt_required
+    @JWTService.jwt_required
     def refresh_token(self):
         """Refresh JWT token"""
         try:
-            user = get_current_user()
+            user = request.authenticated_user
 
-            token = JWTService.generate_token(user=user)
-            data = AuthResponse(
-                token=token,
-                user=UserData(
-                    id=user.id, name=user.name, email=user.email, login=user.login
-                ),
+            token = JWTService.generate_token(
+                user={"uid": user.id, "login": user.login}
             )
-            return self._success(**data.model_dump())
+            data = AuthResponse(token=token)
+            return self._success(data)
 
         except ValidationError as e:
             return self._error(message=str(e), code=400)
@@ -99,27 +81,20 @@ class AuthController(BaseAPI):
         methods=["POST"],
         csrf=False,
     )
-    @jwt_required
+    @JWTService.jwt_required
     def change_password(self):
-        """Change user password after validating old password"""
-        user = get_current_user()
-
+        """Change user password"""
         try:
-            params = json.loads(request.httprequest.data or "{}")
-            old_password = params.get("old_password")
-            new_password = params.get("new_password")
+            AuthService().change_user_password()
+            return self._success(message="Password changed successfully.")
 
-            success = get_auth_service().change_user_password(
-                user=user, old_password=old_password, new_password=new_password
+        except AccessDenied as _:
+            return self._error(
+                message="The old password you provided is incorrect.", code=403
             )
-
-            if success:
-                return self._success(message="Password updated successfully")
-
-            return self._error(message="Old password is incorrect", code=400)
-
         except ValidationError as e:
             return self._error(message=str(e), code=400)
-
-        except Exception:
-            return self._error(message="Something went wrong", code=500)
+        except Exception as e:
+            return self._error(
+                message=f"An unexpected error occurred. {str(e)}", code=500
+            )

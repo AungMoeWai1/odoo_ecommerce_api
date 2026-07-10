@@ -1,24 +1,27 @@
-"""Profile schema for user profile endpoint"""
-
-# pylint: disable=no-self-argument
-
+from dataclasses import dataclass
 from typing import Optional
-from pydantic import field_validator
+
 from .auth_schema import UserData
 
 
-class ProfileResponse(UserData):
+@dataclass
+class Profile:
     """Response schema for user profile endpoint"""
 
+    email: Optional[str] = None
+    phone: Optional[str] = None
     street: Optional[str] = None
     city: Optional[str] = None
     company_id: Optional[int] = None
     company_name: Optional[str] = None
     image_url: Optional[str] = None
 
-    """Validators"""
 
-    @field_validator("*", mode="before")
-    def clean(cls, v):
-        """Clean the field values"""
-        return v or None
+@dataclass
+class ProfileResponse(Profile, UserData):
+    """Response schema for user profile endpoint combining UserData and Profile"""
+
+
+@dataclass
+class UpdateProfile(Profile):
+    """Response schema for update profile endpoint"""

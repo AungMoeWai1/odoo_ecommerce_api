@@ -3,13 +3,6 @@
 from . import (
     authentication,
     base,
-    category,
     product,
     profile,
-    address,
-    shipping_method,
-    website,
-    wishlist,
-    order,
-    reviews,
 )

@@ -1,23 +1,29 @@
 """Schemas for authentication-related API responses"""
 
-# pylint:disable=too-few-public-methods,import-error
+# pylint:disable=too-few-public-methods
+from dataclasses import dataclass
 from typing import Optional
 
-from pydantic import BaseModel
 
-
-class UserData(BaseModel):
+@dataclass
+class UserData:
     """Basic user data for API responses"""
 
     id: int
     name: str
-    email: str
     login: str
-    phone: Optional[str | bool] = None
 
 
-class AuthResponse(BaseModel):
+@dataclass
+class UpdateUserData:
+    """Basic user data for API responses"""
+
+    name: str
+    login: str
+
+
+@dataclass
+class AuthResponse:
     """Response schema for authentication endpoints"""
 
     token: Optional[str] = None
-    user: Optional[UserData] = None

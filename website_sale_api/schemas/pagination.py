@@ -1,13 +1,13 @@
 """Schema for paginated responses."""
 
+from dataclasses import dataclass
 from typing import Generic, List, TypeVar
-
-from pydantic import BaseModel
 
 T = TypeVar("T")
 
 
-class PaginatedResponse(BaseModel, Generic[T]):
+@dataclass
+class PaginatedResponse(Generic[T]):
     """Generic schema for paginated responses"""
 
     data: List[T]

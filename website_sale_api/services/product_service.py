@@ -28,7 +28,7 @@ class ProductService(BaseService):
         "image_256",
         "qty_available",
         "rating_count",
-        "product_template_image_ids"
+        "product_template_image_ids",
     ]
 
     def get_products(self, kwargs):
@@ -44,7 +44,6 @@ class ProductService(BaseService):
             model_name=self.model_name, domain=domain, fields=self.fields, sort=sort
         )
 
-
         products = []
         for product in paginated_data["data"]:
             pricing = self._compute_pricing(product)
@@ -53,23 +52,23 @@ class ProductService(BaseService):
                     id=product["id"],
                     name=product["name"],
                     description=product["description"],
-
                     price=pricing["price"],
                     sale_price=pricing["sale_price"],
                     discounted_unit_price=pricing["discounted_unit_price"],
                     discount_amount=pricing["discount_amount"],
-
                     currency=product["currency_id"][1],
                     currency_id=product["currency_id"],
                     category_name=product["categ_id"][1],
                     stock_qty=product["qty_available"],
                     rating=product["rating_avg"],
                     review_count=product["rating_count"],
-                    attributes=self._get_product_attribute_names(product["attribute_line_ids"]),
-                    images=self.get_product_images(product["product_variant_ids"], product["id"]),
-                    variants=self._get_product_variants(
-                        product["product_variant_ids"]
+                    attributes=self._get_product_attribute_names(
+                        product["attribute_line_ids"]
                     ),
+                    images=self.get_product_images(
+                        product["product_variant_ids"], product["id"]
+                    ),
+                    variants=self._get_product_variants(product["product_variant_ids"]),
                 )
             )
 
@@ -94,17 +93,26 @@ class ProductService(BaseService):
 
         # 2. Batch fetch all related images in ONE database query
         # This avoids the N+1 problem and handles both variants and template images
-        image_records = self.env["product.image"].sudo().search([
-            '|',
-            ('product_variant_id', 'in', product_variant_ids),
-            ('product_tmpl_id', '=', template_id)
-        ], order='sequence')
+        image_records = (
+            self.env["product.image"]
+            .sudo()
+            .search(
+                [
+                    "|",
+                    ("product_variant_id", "in", product_variant_ids),
+                    ("product_tmpl_id", "=", template_id),
+                ],
+                order="sequence",
+            )
+        )
 
         # 3. Efficiently map record IDs to URLs using list comprehension
-        images.extend([
-            f"{base_url}/web/image/product.image/{img.id}/image_256"
-            for img in image_records
-        ])
+        images.extend(
+            [
+                f"{base_url}/web/image/product.image/{img.id}/image_256"
+                for img in image_records
+            ]
+        )
 
         return images
 
@@ -139,11 +147,7 @@ class ProductService(BaseService):
 
         lines = self.env["product.template.attribute.line"].browse(attribute_line_ids)
 
-        return list({
-            line.attribute_id.name
-            for line in lines
-            if line.attribute_id
-        })
+        return list({line.attribute_id.name for line in lines if line.attribute_id})
 
     def _get_product_variants(self, variant_ids):
         """Get formatted product variants"""
@@ -202,10 +206,11 @@ class ProductService(BaseService):
             stock_qty=product.get("qty_available", 0),
             rating=product.get("rating_avg"),
             review_count=product.get("rating_count", 0),
-            attributes=self._get_product_attribute_names(product.get("attribute_line_ids", [])),
+            attributes=self._get_product_attribute_names(
+                product.get("attribute_line_ids", [])
+            ),
             images=self.get_product_images(
-                product.get("product_variant_ids", []),
-                product["id"]
+                product.get("product_variant_ids", []), product["id"]
             ),
             variants=self._get_product_variants(product.get("product_variant_ids", [])),
         )
