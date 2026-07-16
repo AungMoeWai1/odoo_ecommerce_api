@@ -1,7 +1,8 @@
 """Schemas for shipping address responses in the Odoo e-commerce API."""
 
-from typing import Optional
 from dataclasses import dataclass
+from typing import Optional
+
 
 @dataclass
 class Country:
@@ -9,6 +10,7 @@ class Country:
 
     id: Optional[int] = None
     name: Optional[str] = None
+
 
 @dataclass
 class AddressLine:
@@ -24,8 +26,9 @@ class AddressLine:
     is_parent: bool = False
     country: Optional[Country] = None
 
+
 @dataclass
-class ShippingAddressResponse():
+class ShippingAddressResponse:
     """Schema for shipping address response"""
 
     partner_id: int

@@ -1,8 +1,9 @@
 """Authentication and user management service for the e-commerce API."""
 
+# pylint:disable=import-error,broad-exception-caught
 import json
 
-from odoo.exceptions import AccessDenied, ValidationError
+from odoo.exceptions import ValidationError
 from odoo.http import request
 
 

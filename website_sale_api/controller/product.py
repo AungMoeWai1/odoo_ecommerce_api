@@ -4,7 +4,8 @@
 
 from odoo import http
 
-from ..services.product_service import get_product_service
+from ..services.product_service import ProductService
+from ..services.product_variant_service import ProductVariantService
 from .base import BaseAPI
 
 
@@ -16,9 +17,9 @@ class ProductAPI(BaseAPI):
     )
     def get_products(self, **kwargs):
         """Retrieve a list of products with pagination and sorting"""
-        result = get_product_service().get_products(kwargs)
+        result = ProductService().get_products(kwargs)
 
-        return self._success(result)
+        return self._success(result, wrap_in_data=True)
 
     @http.route(
         "/api/products/<int:product_id>",
@@ -29,5 +30,5 @@ class ProductAPI(BaseAPI):
     )
     def get_product(self, product_id):
         """Retrieve product details by ID"""
-        result = get_product_service().get_product_by_id(product_id)
-        return self._success(data=result.model_dump())
+        result = ProductVariantService().get_product_by_id(product_id)
+        return self._success(data=result, wrap_in_data=True)

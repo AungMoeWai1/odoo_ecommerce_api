@@ -35,7 +35,9 @@ class ProfileController(BaseAPI):
 
         user = request.authenticated_user
         data = json.loads(request.httprequest.data or "{}")
-        return self._success(ProfileService().update_profile(user=user, data=data))
+        return self._success(
+            ProfileService().update_profile_value(user=user, data=data)
+        )
 
     @http.route(
         "/api/auth/profile/image", methods=["PUT"], type="http", auth="none", csrf=False

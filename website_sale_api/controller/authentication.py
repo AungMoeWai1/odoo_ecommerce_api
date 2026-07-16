@@ -1,7 +1,7 @@
 """Authentication controller for handling user login,
 registration, profile retrieval, and password management."""
 
-# pylint:disable=too-few-public-methods,import-error
+# pylint:disable=too-few-public-methods,import-error,broad-exception-caught
 from odoo import http
 from odoo.exceptions import AccessDenied, ValidationError
 from odoo.http import request

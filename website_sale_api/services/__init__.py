@@ -3,6 +3,9 @@
 from . import (
     auth_service,
     base_service,
+    pagination_service,
+    product_service,
+    product_variant_service,
     profile_service,
     token_service,
 )

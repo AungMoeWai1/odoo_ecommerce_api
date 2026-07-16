@@ -15,9 +15,7 @@ from .base import BaseAPI
 class AddressAPI(BaseAPI):
     """Controller class for handling shipping address related API endpoints"""
 
-    @http.route(
-        "/api/address", type="http", auth="none", methods=["POST"], csrf=False
-    )
+    @http.route("/api/address", type="http", auth="none", methods=["POST"], csrf=False)
     @JWTService.jwt_required
     def create_shipping_address(self):
         """Create a new shipping address for the authenticated user"""
@@ -45,9 +43,7 @@ class AddressAPI(BaseAPI):
             )
         )
 
-    @http.route(
-        "/api/address", type="http", auth="none", methods=["GET"], csrf=False
-    )
+    @http.route("/api/address", type="http", auth="none", methods=["GET"], csrf=False)
     @JWTService.jwt_required
     def get_shipping_address(self):
         """Retrieve the authenticated user's shipping address information"""
@@ -56,9 +52,7 @@ class AddressAPI(BaseAPI):
             lambda: get_shipping_address_service().get_shipping_address(user=user)
         )
 
-    @http.route(
-        "/api/address", type="http", auth="none", methods=["PUT"], csrf=False
-    )
+    @http.route("/api/address", type="http", auth="none", methods=["PUT"], csrf=False)
     @JWTService.jwt_required
     def update_shipping_address(self, **kwargs):
         """Update the authenticated user's shipping address information"""

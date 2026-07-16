@@ -1,3 +1,5 @@
+"""Response schema for user profile endpoint combining UserData and Profile"""
+
 from dataclasses import dataclass
 from typing import Optional
 

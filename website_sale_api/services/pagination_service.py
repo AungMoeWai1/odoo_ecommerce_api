@@ -1,51 +1,68 @@
 """pagination"""
 
-# pylint:disable=import-error,too-few-public-methods
-from odoo.http import request
+# pylint:disable=import-error
+from typing import Any, Dict, Optional
+
+from .base_service import BaseService
 
 
-class PaginationService:
-    """Service for handling pagination logic"""
+class PaginationService(BaseService):
+    """Generic service for handling pagination logic."""
 
-    def __init__(self, params):
-        self.page = int(params.get("page", 1))
-        self.size = int(params.get("size", 10))
-        self.offset = (self.page - 1) * self.size
-        self.limit = self.size
+    def __init__(self, env=None):
+        super().__init__(env)
+        self.fields = []
+        self.default_domain = []
+        self.default_sort = "id"
 
     def get_paginated_records(
         self,
-        model_name,
-        domain=None,
-        fields=None,
-        sort=None,
-    ):
-        """Retrieve paginated records from the specified model
-        based on the initialized pagination parameters."""
-        domain = domain or []
+        sort: Optional[str] = None,
+        page: int = 1,
+        size: int = 10,
+    ) -> Dict[str, Any]:
+        """
+        Retrieve paginated records.
 
-        model = request.env[model_name].sudo()
+        Args:
+            domain: Domain filter (default: self.default_domain)
+            fields: Fields to fetch (default: self.fields)
+            sort: Sort order (default: self.default_sort)
+            page: Page number (1-indexed)
+            size: Items per page
 
-        total = model.search_count(domain)
+        Returns:
+            Dict with paginated data including metadata
+        """
+        sort = sort if sort else self.default_sort
 
-        records = model.search_read(
-            domain, fields, limit=self.limit, offset=self.offset, order=sort
-        )
+        # Calculate pagination
+        offset = (page - 1) * size
 
-        if records:
-            return self._build_response(records, total)
-        return self._build_response([], total)
+        # Get total and records
+        total = self.search_count()
+        records = self.search_read(limit=size, offset=offset, order=sort)
 
-    def _build_response(self, data, total):
-        """Build the pagination response structure based on the retrieved data and total count."""
-        total_pages = (total + self.size - 1) // self.size
+        # Build response
+        total_pages = (total + size - 1) // size if size > 0 else 0
 
         return {
-            "data": data,
+            "data": records,
             "total": total,
-            "page": self.page,
-            "size": self.size,
+            "page": page,
+            "size": size,
             "total_pages": total_pages,
-            "has_next": self.page < total_pages,
-            "has_prev": self.page > 1,
+            "has_next": page < total_pages,
+            "has_prev": page > 1,
         }
+
+    def get_paginated_from_kwargs(
+        self,
+        kwargs: Dict[str, Any],
+        sort: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Get paginated records with parameters from kwargs."""
+        page = int(kwargs.get("page", 1))
+        size = int(kwargs.get("size", 10))
+
+        return self.get_paginated_records(sort=sort, page=page, size=size)
