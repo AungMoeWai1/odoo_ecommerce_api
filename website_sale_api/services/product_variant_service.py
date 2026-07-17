@@ -2,10 +2,11 @@
 
 # pylint:disable=import-error
 from typing import List
+
 from odoo.exceptions import ValidationError
-from ..schemas.product_schema import DetailProductData
+
+from ..schemas.product_schema import DetailProductData, ProductVariantData
 from .product_service import ProductService
-from ..schemas.product_schema import ProductVariantData
 
 
 class ProductVariantService(ProductService):
@@ -25,7 +26,7 @@ class ProductVariantService(ProductService):
             "rating_count",
             "product_template_attribute_value_ids",
             "product_tmpl_id",
-            "image_256",
+            "allow_out_of_stock_order" "image_256",
         ]
 
     def get_product_by_id(self, product_id: int) -> DetailProductData:
@@ -62,6 +63,7 @@ class ProductVariantService(ProductService):
             id=variant.id,
             name=variant.display_name,
             description=variant.description,
+            allow_out_of_stock_order=variant.allow_out_of_stock_order,
             price=variant.lst_price,
             sale_price=pricelist_info["price"],
             discount_amount=pricelist_info["discount_amount"],

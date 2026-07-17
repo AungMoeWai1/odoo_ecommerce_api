@@ -1,5 +1,6 @@
 """Schema definitions for Product model."""
 
+# pylint:disable=too-many-instance-attributes
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
@@ -22,6 +23,8 @@ class BaseProductData:
     category_id: Optional[int] = None
     rating: Optional[float] = 0.0
     review_count: Optional[int] = 0
+    allow_out_of_stock_order: Optional[bool] = False
+    stock_qty: Optional[float] = None
 
 
 @dataclass
@@ -29,7 +32,6 @@ class ProductVariantData(BaseProductData):
     """Schema for individual product variant data"""
 
     attributes: Dict[str, str] = None
-    stock_qty: Optional[float] = None
     images: Optional[List[str]] = field(default_factory=list)
 
 

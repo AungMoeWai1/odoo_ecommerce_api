@@ -3,6 +3,7 @@
 # pylint: disable=too-few-public-methods,import-error
 
 from odoo import http
+from odoo.exceptions import ValidationError
 
 from ..services.product_service import ProductService
 from ..services.product_variant_service import ProductVariantService
@@ -30,5 +31,8 @@ class ProductAPI(BaseAPI):
     )
     def get_product(self, product_id):
         """Retrieve product details by ID"""
-        result = ProductVariantService().get_product_by_id(product_id)
-        return self._success(data=result, wrap_in_data=True)
+        try:
+            result = ProductVariantService().get_product_by_id(product_id)
+            return self._success(data=result, wrap_in_data=True)
+        except ValidationError as e:
+            return self._error(message=e)

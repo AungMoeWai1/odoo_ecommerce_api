@@ -3,7 +3,7 @@
 # pylint:disable=too-few-public-methods,import-error
 from odoo import http
 
-from ..services.categroy_service import get_category_service
+from ..services.categroy_service import CategoryService
 from .base import BaseAPI
 
 
@@ -15,6 +15,6 @@ class CategoryAPI(BaseAPI):
     )
     def get_categories(self, **kwargs):
         """Retrieve a list of product categories with pagination and sorting"""
-        result = get_category_service().get_categories(kwargs)
+        result = CategoryService().get_categories(kwargs)
 
-        return self._success(data=result.model_dump())
+        return self._success(result)

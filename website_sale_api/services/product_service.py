@@ -31,6 +31,7 @@ class ProductService(PaginationService):
             "public_categ_ids",
             "rating_count",
             "product_template_image_ids",
+            "allow_out_of_stock_order",
             "uom_id",
         ]
         self.website = self._get_current_website()
@@ -55,14 +56,19 @@ class ProductService(PaginationService):
         """Convert raw product data to ProductData schema."""
         product_tmpl = self.env["product.template"].browse(product["id"])
         pricelist_info = self.get_pricelist_info(product_tmpl)
+        discount_amount = pricelist_info["discount_amount"]
+        if pricelist_info["discount_type"] == "fixed":
+            discount_amount = product["list_price"] - pricelist_info["discount_amount"]
 
         return ProductData(
             id=product["id"],
             name=product["name"],
             description=product.get("description"),
+            allow_out_of_stock_order=product["allow_out_of_stock_order"],
+            stock_qty=product["qty_available"],
             price=product["list_price"],
             sale_price=pricelist_info["price"],
-            discount_amount=pricelist_info["discount_amount"],
+            discount_amount=discount_amount,
             discount_type=pricelist_info["discount_type"],
             currency=self.website.currency_id.name,
             currency_id=self.website.currency_id.id,
@@ -129,10 +135,12 @@ class ProductService(PaginationService):
 
     def get_attributes_dict(self, variant) -> Dict[str, str]:
         """Get variant attributes as dictionary."""
-        return {
-            value.attribute_id.name: value.name
-            for value in variant.product_template_attribute_value_ids
-        }
+        result = {}
+        for value in variant.product_template_attribute_value_ids:
+            result[value.attribute_id.name] = value.name
+            if value.display_type == "color":
+                result[value.attribute_id.name] += "," + value.html_color
+        return result
 
     def build_product_domain(self) -> List:
         """Build standard product domain with website and published filters."""
