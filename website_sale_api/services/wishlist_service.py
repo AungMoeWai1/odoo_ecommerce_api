@@ -20,7 +20,7 @@ class WishlistService(BaseService):
     def get_wishlists(self, user) -> WishlistResponse:
         """Fetches the wishlist items for the current user and specified website"""
 
-        wishlists = self._wishlist_env().get_partner_wishlist(user, self.website.id)
+        wishlists = self._get_model().get_partner_wishlist(user, self.website.id)
 
         wishlist_data = []
         for wish in wishlists:
@@ -59,7 +59,7 @@ class WishlistService(BaseService):
 
     def delete_wishlist(self, user, wishlist_id):
         """Deletes a wishlist item for the current user"""
-        wishlist = self._wishlist_env().get_partner_wishlist(
+        wishlist = self._get_model().get_partner_wishlist(
             user, self.website.id, wishlist_id
         )
 
@@ -70,12 +70,9 @@ class WishlistService(BaseService):
         wishlist_id = wishlist.id
 
         # Delete the wishlist
-        wishlist.unlink()
+        self._delete(wishlist)
 
         return {
             "id": wishlist_id,
             "message": "Wishlist deleted successfully",
         }
-
-    def _wishlist_env(self):
-        return request.env[self.model_name].sudo()

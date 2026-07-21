@@ -1,6 +1,6 @@
 """Service for handling product variant-related business logic."""
 
-# pylint:disable=import-error
+# pylint:disable=import-error,protected-access
 from typing import List
 
 from odoo.exceptions import ValidationError
@@ -46,7 +46,7 @@ class ProductVariantService(ProductService):
         )
 
     def get_variants_by_template_id(
-        self, prod_tmpl_id: int
+            self, prod_tmpl_id: int
     ) -> List[ProductVariantData]:
         """Get all variants for a product template."""
         variants = (
@@ -76,5 +76,14 @@ class ProductVariantService(ProductService):
             rating=variant.rating_avg or 0.0,
             review_count=variant.rating_count or 0,
             attributes=self.get_attributes_dict(variant),
-            images=self._get_image_url(self.model_name, variant.id, size="image_1024"),
+            images=self._get_product_images(variant),
         )
+
+    def _get_product_images(self, variant):
+        """Get all product images and convert to URLs."""
+        image_records = variant._get_images()
+
+        return [
+            self._get_image_url(record._name, record.id, size="image_1024")
+            for record in image_records
+        ]
