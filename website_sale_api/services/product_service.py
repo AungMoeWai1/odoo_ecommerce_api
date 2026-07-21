@@ -56,9 +56,6 @@ class ProductService(PaginationService):
         """Convert raw product data to ProductData schema."""
         product_tmpl = self.env["product.template"].browse(product["id"])
         pricelist_info = self.get_pricelist_info(product_tmpl)
-        discount_amount = pricelist_info["discount_amount"]
-        if pricelist_info["discount_type"] == "fixed":
-            discount_amount = product["list_price"] - pricelist_info["discount_amount"]
 
         return ProductData(
             id=product["id"],
@@ -68,14 +65,14 @@ class ProductService(PaginationService):
             stock_qty=product["qty_available"],
             price=product["list_price"],
             sale_price=pricelist_info["price"],
-            discount_amount=discount_amount,
+            discount_amount=pricelist_info["discount_amount"],
             discount_type=pricelist_info["discount_type"],
             currency=self.website.currency_id.name,
             currency_id=self.website.currency_id.id,
             category_id=product.get("public_categ_ids"),
             rating=product.get("rating_avg", 0.0),
             review_count=product.get("rating_count", 0),
-            images=self._get_image_url("product.template", product["id"]),
+            images=self._get_image_url(self.model_name, product["id"]),
         )
 
     def get_pricelist_info(self, product) -> Dict[str, Any]:
@@ -87,9 +84,13 @@ class ProductService(PaginationService):
         rule = self.env["product.pricelist.item"].browse(rule_id)
         discount_info = self._calculate_discount(rule)
 
+        discount_amount = discount_info["amount"]
+        if discount_info["type"] == "fixed":
+            discount_amount = product["list_price"] - discount_info["amount"]
+
         return {
             "price": round(price, 2),
-            "discount_amount": discount_info["amount"],
+            "discount_amount": discount_amount,
             "discount_type": discount_info["type"],
         }
 
@@ -102,36 +103,7 @@ class ProductService(PaginationService):
             "fixed": rule.fixed_price,
         }
 
-        return {"amount": discount_map.get(compute_type, 0.0), "type": compute_type}
-
-    def get_product_images(
-        self, model_name: str, record_id: int, field: str = "image_256"
-    ) -> str:
-        """Get product images URL."""
-        return self._get_image_url(model_name, record_id, field)
-
-    def get_variant_images(self, variant) -> List[str]:
-        """Get images for a variant with fallback hierarchy."""
-        product_image = self.env["product.image"].sudo()
-
-        # Get variant images first, then template images
-        images = product_image.search(
-            [
-                "|",
-                ("product_variant_id", "=", variant.id),
-                ("product_tmpl_id", "=", variant.product_tmpl_id.id),
-            ],
-            order="product_variant_id DESC, sequence",
-        )
-
-        # Return image URLs or fallback to template main image
-        return [
-            self._get_image_url("product.image", img.id, "image_256") for img in images
-        ] or [
-            self._get_image_url(
-                "product.template", variant.product_tmpl_id.id, "image_256"
-            )
-        ]
+        return {"amount": discount_map.get(compute_type, 0.0), "type": compute_type}  #
 
     def get_attributes_dict(self, variant) -> Dict[str, str]:
         """Get variant attributes as dictionary."""

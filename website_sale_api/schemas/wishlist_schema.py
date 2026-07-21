@@ -1,18 +1,20 @@
 """Data schemas for wishlist-related responses in the Odoo e-commerce API."""
 
+from dataclasses import dataclass
 from typing import List
 
-from pydantic import BaseModel
 
-
-class WishlistData(BaseModel):
+@dataclass
+class WishlistData:
     """Pydantic schema for representing a wishlist item"""
 
+    id: int
     product_id: int
-    # need to add product_tmpl_id
+    product_variant_id: int
 
 
-class WishlistResponse(BaseModel):
+@dataclass
+class WishlistResponse:
     """Pydantic schema for representing a wishlist response"""
 
     data: List[WishlistData]

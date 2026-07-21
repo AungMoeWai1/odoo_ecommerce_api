@@ -15,6 +15,7 @@ class ProfileService(BaseService):
     def __init__(self, env=None):
         super().__init__(env)
         self.model_name = "res.users"
+        self.fields = ["image_512"]
 
     def get_profile(self, user):
         """Get user profile information"""

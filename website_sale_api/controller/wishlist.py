@@ -1,6 +1,6 @@
 """API controller for handling wishlist-related requests."""
 
-# pylint: disable=import-error
+# pylint: disable=import-error,broad-exception-caught
 
 import json
 
@@ -8,8 +8,8 @@ from odoo import http
 from odoo.exceptions import ValidationError
 from odoo.http import request
 
-from ..services.token_service import get_current_user, jwt_required
-from ..services.wishlist_service import get_wishlist_service
+from ..services.token_service import JWTService
+from ..services.wishlist_service import WishlistService
 from .base import BaseAPI
 
 
@@ -17,70 +17,59 @@ class WishlistAPI(BaseAPI):
     """API controller for wishlist-related operations"""
 
     @http.route(
-        "/api/websites/<int:website_id>/wishlists",
+        "/api/wishlists",
         type="http",
-        auth="none",
+        auth="public",
         methods=["GET"],
         csrf=False,
     )
-    @jwt_required
-    def get_wishlists(self, website_id):
+    @JWTService.jwt_required
+    def get_wishlists(self):
         """Fetch wishlist items for the current user"""
-        user = get_current_user()
-
-        return self.handle(
-            lambda: get_wishlist_service().get_wishlists(
-                user=user, website_id=website_id
-            )
-        )
+        user = request.authenticated_user
+        return self._success(WishlistService().get_wishlists(user=user))
 
     @http.route(
-        "/api/websites/<int:website_id>/wishlists",
+        "/api/wishlists",
         type="http",
-        auth="none",
+        auth="public",
         methods=["POST"],
         csrf=False,
     )
-    @jwt_required
-    def add_to_wishlist(self, website_id):
+    @JWTService.jwt_required
+    def add_to_wishlist(self):
         """Create a wishlist item for the current user"""
         try:
-            user = get_current_user()
+            user = request.authenticated_user
             params = json.loads(request.httprequest.data or "{}")
             product_id = params.get("product_id")
 
-            wishlist_item = get_wishlist_service().add_to_wishlist(
-                user=user, product_id=product_id, website_id=website_id
+            wishlist_item = WishlistService().add_to_wishlist(
+                user=user, product_id=product_id
             )
-
-            if wishlist_item:
-                return self._success(message="Wishlist created successfully")
-
-            return self._error(message="Wishlist not found", code=400)
+            return self._success(data=wishlist_item)
 
         except ValidationError as e:
             return self._error(message=str(e), code=400)
 
     @http.route(
-        "/api/websites/<int:website_id>/wishlists/<int:product_id>/",
+        "/api/wishlists/<int:wishlist_id>",
         type="http",
-        auth="none",
+        auth="public",
         methods=["DELETE"],
         csrf=False,
     )
-    @jwt_required
-    def remove_from_wishlist(self, website_id, product_id):
+    @JWTService.jwt_required
+    def remove_from_wishlist(self, wishlist_id: int):
         """Delete a wishlist item for the current user"""
         try:
-            user = get_current_user()
-            success = get_wishlist_service().remove_from_wishlist(
-                user=user, website_id=website_id, product_id=product_id
+            user = request.authenticated_user
+            result = WishlistService().delete_wishlist(
+                user=user, wishlist_id=wishlist_id
             )
-
-            if success:
-                return self._success(message="WishList deleted successfully")
-
-            return self._error(message="Wishlist not found", code=400)
+            return self._success(data=result)
 
         except ValidationError as e:
             return self._error(message=str(e), code=400)
+        except Exception as e:
+            return self._error(message=str(e), code=500)

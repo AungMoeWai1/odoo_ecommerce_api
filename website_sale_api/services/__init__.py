@@ -9,4 +9,5 @@ from . import (
     product_variant_service,
     profile_service,
     token_service,
+    wishlist_service,
 )

@@ -43,7 +43,7 @@ class BaseService:
         """Return current base url."""
         return request.httprequest.host_url.rstrip("/")
 
-    def _get_image_url(self, model, record_id, size="image_512"):
+    def _get_image_url(self, model, record_id, size="image_256"):
         """Get image URL for a specific model and record."""
         return f"{self._get_base_url()}/web/image/{model}/{record_id}/{size}"
 

@@ -26,7 +26,8 @@ class ProductVariantService(ProductService):
             "rating_count",
             "product_template_attribute_value_ids",
             "product_tmpl_id",
-            "allow_out_of_stock_order" "image_256",
+            "allow_out_of_stock_order",
+            "image_1024",
         ]
 
     def get_product_by_id(self, product_id: int) -> DetailProductData:
@@ -75,5 +76,5 @@ class ProductVariantService(ProductService):
             rating=variant.rating_avg or 0.0,
             review_count=variant.rating_count or 0,
             attributes=self.get_attributes_dict(variant),
-            images=self.get_variant_images(variant),
+            images=self._get_image_url(self.model_name, variant.id, size="image_1024"),
         )
