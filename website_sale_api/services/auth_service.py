@@ -55,7 +55,7 @@ class AuthService:
 
         # Change password (raises exceptions on failure)
         user = request.authenticated_user
-        user.sudo().change_password(
+        user.sudo().with_env(request.env(user=user)).change_password(
             payload.get("old_password"), payload.get("new_password")
         )
         return True

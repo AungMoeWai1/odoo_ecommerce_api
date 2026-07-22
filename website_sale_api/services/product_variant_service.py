@@ -46,7 +46,7 @@ class ProductVariantService(ProductService):
         )
 
     def get_variants_by_template_id(
-            self, prod_tmpl_id: int
+        self, prod_tmpl_id: int
     ) -> List[ProductVariantData]:
         """Get all variants for a product template."""
         variants = (
