@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_partner_address_inherit" model="ir.ui.view">
+        <field name="name">res.partner.address.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='city']" position="after">
+                <field name="township_id" placeholder="Township" class="o_address_city"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

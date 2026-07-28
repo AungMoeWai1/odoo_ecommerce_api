@@ -17,7 +17,7 @@ class ProfileController(BaseAPI):
     @http.route(
         "/api/auth/profile", type="http", auth="public", methods=["GET"], csrf=False
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def get_profile(self):
         """Get current user profile"""
 
@@ -29,7 +29,7 @@ class ProfileController(BaseAPI):
     @http.route(
         "/api/auth/profile", methods=["PUT"], type="http", auth="none", csrf=False
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def update_profile(self):
         """Update current user profile"""
 
@@ -42,7 +42,7 @@ class ProfileController(BaseAPI):
     @http.route(
         "/api/auth/profile/image", methods=["PUT"], type="http", auth="none", csrf=False
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def upload_profile_image(self):
         """Upload profile image for the current user"""
 

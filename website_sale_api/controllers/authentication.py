@@ -51,7 +51,7 @@ class AuthController(BaseAPI):
     @http.route(
         "/api/auth/logout", type="http", auth="public", methods=["POST"], csrf=False
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def logout(self):
         """Logout endpoint"""
         return self._success(message="Logout successful")
@@ -59,7 +59,7 @@ class AuthController(BaseAPI):
     @http.route(
         "/api/auth/refresh", type="http", auth="public", methods=["POST"], csrf=False
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required(skip_expiry=True)
     def refresh_token(self):
         """Refresh JWT token"""
         try:
@@ -81,7 +81,7 @@ class AuthController(BaseAPI):
         methods=["POST"],
         csrf=False,
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def change_password(self):
         """Change user password"""
         try:

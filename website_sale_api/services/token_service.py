@@ -1,6 +1,6 @@
 """JWT Token Service - Handle all token operations and authentication middleware."""
 
-# pylint:disable=import-error,raise-missing-from,broad-exception-caught
+# pylint:disable=import-error,raise-missing-from,broad-exception-caught,protected-access
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -8,7 +8,8 @@ import jwt
 from odoo.exceptions import AccessDenied
 from odoo.http import request
 
-JWT_EXPIRY_MINUTES = 60
+JWT_EXPIRY_MINUTES = 120
+JWT_REFRESH_EXPIRY_MONTH = 1
 JWT_ALGORITHM = "HS256"
 JWT_SECRET_KEY = "9f3a8c2e7b6a1d4f9e3c8a2b7c6d5e4f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
 
@@ -88,53 +89,82 @@ class JWTService:
     # ============ STATIC METHODS (Don't need class or instance) ============
 
     @staticmethod
-    def jwt_required(func):
+    def jwt_required(skip_expiry=False):  # Add parameter
         """
-        JWT Authentication Decorator (STATIC METHOD)
-        - Used as decorator on routes
-        - Doesn't need class or instance state
-        - Creates instance internally when needed
+        JWT Authentication Decorator
+        - skip_expiry: If True, allows expired tokens (for refresh endpoints)
         """
 
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            auth_header = request.httprequest.headers.get("Authorization", "")
+        def decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                auth_header = request.httprequest.headers.get("Authorization", "")
 
-            if not auth_header or not auth_header.startswith("Bearer "):
-                return request.make_json_response(
-                    {
-                        "status": "fail",
-                        "message": "Missing or invalid Authorization header",
-                    },
-                    status=401,
-                )
-
-            token = auth_header.split(" ")[1]
-
-            try:
-                # Create instance to use get_user_from_token
-                uid = JWTService().get_user_from_token(token)
-
-                user = request.env["res.users"].sudo().browse(uid)
-                if not user.exists():
+                if not auth_header or not auth_header.startswith("Bearer "):
                     return request.make_json_response(
-                        {"status": "fail", "message": "User no longer exists"},
+                        {
+                            "status": "fail",
+                            "message": "Missing or invalid Authorization header",
+                        },
                         status=401,
                     )
 
-                # Attach user and payload
-                request.authenticated_user = user
+                token = auth_header.split(" ")[1]
 
-            except AccessDenied as e:
-                return request.make_json_response(
-                    {"status": "fail", "message": str(e)}, status=401
-                )
-            except Exception as e:
-                return request.make_json_response(
-                    {"status": "fail", "message": f"Authentication failed: {str(e)}"},
-                    status=401,
-                )
+                try:
+                    # Create instance to use methods
+                    jwt_service = JWTService()
 
-            return func(*args, **kwargs)
+                    if skip_expiry:
+                        # Verify without checking expiration
+                        payload = jwt_service._verify_token_without_expiry(token)
+                    else:
+                        # Normal verification with expiry check
+                        payload = jwt_service._verify_token(token)
 
-        return wrapper
+                    uid = payload.get("uid")
+                    if not uid:
+                        raise AccessDenied("Invalid token payload: missing user ID")
+
+                    user = request.env["res.users"].sudo().browse(uid)
+                    if not user.exists():
+                        return request.make_json_response(
+                            {"status": "fail", "message": "User no longer exists"},
+                            status=401,
+                        )
+
+                    request.authenticated_user = user
+                    request.jwt_payload = payload  # Store payload for access
+
+                except AccessDenied as e:
+                    return request.make_json_response(
+                        {"status": "fail", "message": str(e)}, status=401
+                    )
+                except Exception as e:
+                    return request.make_json_response(
+                        {
+                            "status": "fail",
+                            "message": f"Authentication failed: {str(e)}",
+                        },
+                        status=401,
+                    )
+
+                return func(*args, **kwargs)
+
+            return wrapper
+
+        return decorator
+
+    def _verify_token_without_expiry(self, token):
+        """
+        Verify JWT token WITHOUT checking expiration
+        """
+        try:
+            return jwt.decode(
+                token,
+                JWT_SECRET_KEY,
+                algorithms=[JWT_ALGORITHM],
+                options={"verify_exp": False},  # Skip expiration check
+            )
+        except jwt.InvalidTokenError:
+            raise AccessDenied("Invalid token")

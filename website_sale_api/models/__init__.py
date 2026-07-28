@@ -1,3 +1,10 @@
 """Initialization of the schemas package for website_sale_api module"""
 
-from . import product_template, product_wishlist
+from . import (
+    delivery_carrier,
+    product_template,
+    product_wishlist,
+    res_country_state,
+    res_partner,
+    res_township,
+)

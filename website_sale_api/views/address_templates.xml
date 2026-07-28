@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<odoo>
+
+    <template id="website_sale_address_with_township" inherit_id="website_sale.address_form_fields">
+        <xpath expr="//div[@id='div_state']" position="after">
+            <div id="div_township" class="col-lg-6 mb-2" t-att-style="not state_townships and 'display: none'">
+                <label class="col-form-label" for="o_township_id">
+                    Township
+                </label>
+                <select
+                        id="o_township_id"
+                        name="township_id"
+                        class="form-select"
+                >
+                    <option value="">Township...</option>
+                    <option
+                            t-foreach="state_townships"
+                            t-as="t"
+                            t-att-value="t.id"
+                            t-att-selected="t.id == (int(township_id) if township_id else partner_sudo.township_id.id)"
+                            t-out="t.name"
+                    />
+                </select>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

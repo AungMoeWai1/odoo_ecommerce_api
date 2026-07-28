@@ -23,7 +23,7 @@ class WishlistAPI(BaseAPI):
         methods=["GET"],
         csrf=False,
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def get_wishlists(self):
         """Fetch wishlist items for the current user"""
         user = request.authenticated_user
@@ -36,7 +36,7 @@ class WishlistAPI(BaseAPI):
         methods=["POST"],
         csrf=False,
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def add_to_wishlist(self):
         """Create a wishlist item for the current user"""
         try:
@@ -59,7 +59,7 @@ class WishlistAPI(BaseAPI):
         methods=["DELETE"],
         csrf=False,
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def remove_from_wishlist(self, wishlist_id: int):
         """Delete a wishlist item for the current user"""
         try:
