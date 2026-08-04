@@ -59,9 +59,13 @@ class BaseService:
 
     def get_record_by_id(self, record_id):
         """Get a single record by ID."""
-        self.default_domain.append(("id", "=", record_id))
-        records = self.search_read(limit=1)
-        return records[0] if records else None
+        record = self._get_model().browse(record_id)
+
+        # Check if record exists
+        if not record.exists():
+            return None  # or return self._get_model().browse() for empty recordset
+
+        return record
 
     def _create(self, data: Dict[str, Any]):
         """Create a new record."""

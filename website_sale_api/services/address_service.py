@@ -3,66 +3,52 @@
 # pylint: disable=too-few-public-methods, import-error,too-many-arguments,too-many-positional-arguments,redefined-builtin,raise-missing-from,consider-using-in
 from odoo.exceptions import ValidationError
 from odoo.http import request
+from .base_service import BaseService
 
-from ..schemas.address_schema import AddressLine, ShippingAddressResponse
+from ..schemas.address_schema import (
+    State,
+    StateResponse,
+    Township,
+    TownshipResponse,
+    AddressLine,
+    ShippingAddressResponse,
+)
 
 
-class ShippingAddressService:
+class ShippingAddressService(BaseService):
     """Service class for managing shipping addresses"""
 
-    def _get_country(self, country):
-        """Helper method to retrieve country record by name"""
-        if not country:
-            return False
+    def __init__(self):
+        super().__init__()
+        self.model_name = "res.partner"
 
-        country_rec = (
-            request.env["res.country"].sudo().search([("name", "=", country)], limit=1)
+    def get_state(self, country_id):
+        """Get state for a country"""
+        states = request.env["res.country.state"].search(
+            [("country_id", "=", country_id)]
         )
-        if not country_rec:
-            raise ValidationError(f"Country '{country}' not found")
+        return StateResponse(
+            country_id=country_id,
+            states=[State(id=state.id, name=state.name) for state in states],
+        )
 
-        return country_rec
+    def get_state_townships(self, country_id):
+        """get townships excluding a specific country."""
+        townships = request.env["res.township"].search(
+            [("country_id", "=", country_id)]
+        )
+        return TownshipResponse(
+            country_id=country_id,
+            townships=[
+                Township(id=tsp.id, name=tsp.name, state_id=tsp.state_id.id)
+                for tsp in townships
+            ],
+        )
 
-    def create_shipping_address(
-        self, user, name, email, phone, street, city, zip, country
-    ):
-        """Create a new shipping address for the user"""
+    def get_partner_addresses(self, user):
+        """get addresses of partner"""
         partner = user.partner_id
-        if not partner:
-            raise ValidationError("Partner not found")
-
-        country_rec = False
-        if country:
-            country_rec = self._get_country(country)
-
-        shipping_vals = {
-            "type": "delivery",
-            "parent_id": partner.id,
-            "name": name,
-            "email": email,
-            "phone": phone,
-            "street": street,
-            "city": city,
-            "zip": zip,
-            "country_id": country_rec.id if country_rec else False,
-        }
-        missing = [field for field, value in shipping_vals.items() if not value]
-        if missing:
-            raise ValidationError(f"Missing required field(s): {', '.join(missing)}")
-
-        request.env["res.partner"].sudo().create(shipping_vals)
-
-        return self.get_shipping_address(user)
-
-    def get_shipping_address(self, user):
-        """Get the user's shipping address information"""
-
-        partner = user.partner_id
-        if not partner:
-            raise ValidationError("Partner not found")
-
         addresses = []
-
         all_partners = partner | partner.child_ids
 
         for address in all_partners:
@@ -75,80 +61,57 @@ class ShippingAddressService:
                     city=address.city,
                     zip=address.zip,
                     type=address.type,
-                    is_parent=(address.id == partner.id),
-                    country={
-                        "id": address.country_id.id if address.country_id else None,
-                        "name": address.country_id.name if address.country_id else None,
-                    },
+                    country=address.country_id.id,
+                    state=address.state_id.id,
+                    township=address.township_id.id,
                 )
             )
+        return ShippingAddressResponse(addresses=addresses)
 
-        return ShippingAddressResponse(partner_id=partner.id, addresses=addresses)
+    def _get_country(self, country):
+        """Helper method to retrieve country record by name"""
+        country_rec = (
+            request.env["res.country"].sudo().search([("name", "=", country)], limit=1)
+        )
+        if not country_rec:
+            raise ValidationError(f"Country '{country}' not found")
 
-    def update_shipping_address(
-        self,
-        user,
-        partner_id,
-        name,
-        email,
-        phone,
-        street,
-        city,
-        zip,
-        country,
-    ):
+        return country_rec
+
+    def create_address(self, user, data):
+        """Create a new shipping address for the user"""
+        data["parent_id"] = user.partner_id.id
+        new_partner = (
+            request.env["res.partner"]
+            .sudo()
+            .with_context(
+                {
+                    "tracking_disable": True,
+                    "no_vat_validation": True,
+                }
+            )
+            .create(data)
+        )
+
+        return {"id": new_partner.id, "message": "New Address is created"}
+
+    def update_address(self, user, partner_id, data):
         """Update the user's shipping address with the provided information"""
-        partner = user.partner_id
-        if not partner:
-            raise ValidationError("Partner not found")
+        if partner_id not in user.child_ids.ids:
+            raise ValidationError("Partner not allow")
 
-        partner_id = int(partner_id)
-        address = request.env["res.partner"].sudo().browse(partner_id)
+        address = self.get_record_by_id(partner_id)
 
-        if not address.exists():
-            raise ValidationError("Address not found")
+        address.write(data)
 
-        if address != partner and address.parent_id != partner:
-            raise ValidationError("Unauthorized address")
+        return {"id": address.id, "message": "Address updated successfully"}
 
-        vals = {
-            "name": name,
-            "email": email,
-            "phone": phone,
-            "street": street,
-            "city": city,
-            "zip": zip,
-        }
-
-        vals = {k: v for k, v in vals.items() if v is not None}
-
-        if country:
-            country_rec = self._get_country(country)
-            vals["country_id"] = country_rec.id
-
-        address.write(vals)
-
-        return self.get_shipping_address(user)
-
-    def delete_shipping_address(self, user, partner_id):
+    def delete_address(self, user, partner_id):
         """Delete the specified shipping address for the user"""
-
-        partner = user.partner_id
-        if not partner:
+        if partner_id not in user.partner_id.child_ids.ids:
             raise ValidationError("User not found")
 
-        address = request.env["res.partner"].sudo().browse(partner_id)
-        if not address.exists():
-            raise ValidationError("Shipping Address not found")
+        address = self.get_record_by_id(partner_id)
+        self._delete(address)
 
-        if address.id == partner.id and address.type == "contact":
-            raise ValidationError("Main contact address cannot be deleted")
-
-        address.write({"active": False})
-
-        return self.get_shipping_address(user)
-
-
-def get_shipping_address_service():
-    """Factory method to get an instance of ShippingAddressService"""
-    return ShippingAddressService()
+        return {"id": address.id, "message": "Address deleted successfully"}

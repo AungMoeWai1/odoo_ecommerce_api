@@ -1,5 +1,6 @@
 """Response schema for user profile endpoint combining UserData and Profile"""
 
+# pylint:disable=too-many-instance-attributes
 from dataclasses import dataclass
 from typing import Optional
 
@@ -14,6 +15,7 @@ class Profile:
     phone: Optional[str] = None
     street: Optional[str] = None
     city: Optional[str] = None
+    country_id: Optional[int] = None
     company_id: Optional[int] = None
     company_name: Optional[str] = None
     image_url: Optional[str] = None

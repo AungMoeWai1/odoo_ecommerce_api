@@ -7,7 +7,7 @@ from odoo import http
 from odoo.exceptions import ValidationError
 from odoo.http import request
 
-from ..services.address_service import get_shipping_address_service
+from ..services.address_service import ShippingAddressService
 from ..services.token_service import JWTService
 from .base import BaseAPI
 
@@ -15,93 +15,97 @@ from .base import BaseAPI
 class AddressAPI(BaseAPI):
     """Controller class for handling shipping address related API endpoints"""
 
-    @http.route("/api/address", type="http", auth="none", methods=["POST"], csrf=False)
-    @JWTService.jwt_required
+    @http.route(
+        "/api/countries/<int:cid>/states",
+        type="http",
+        auth="public",
+        methods=["GET"],
+        csrf=False,
+    )
+    @JWTService.jwt_required()
+    def get_state(self, cid):
+        """Get the state of the authenticated user"""
+        return self._success(ShippingAddressService().get_state(country_id=cid))
+
+    @http.route(
+        "/api/countries/<int:cid>/townships",
+        type="http",
+        auth="public",
+        methods=["GET"],
+        csrf=False,
+    )
+    @JWTService.jwt_required()
+    def get_township(self, cid):
+        """Get the state of the authenticated user"""
+        return self._success(
+            ShippingAddressService().get_state_townships(country_id=cid)
+        )
+
+    @http.route(
+        "/api/my/address", type="http", auth="public", methods=["GET"], csrf=False
+    )
+    @JWTService.jwt_required()
+    def get_shipping_address(self):
+        """Retrieve the authenticated user's shipping address information"""
+        user = request.authenticated_user
+        return self._success(ShippingAddressService().get_partner_addresses(user=user))
+
+    @http.route(
+        "/api/my/address", type="http", auth="public", methods=["POST"], csrf=False
+    )
+    @JWTService.jwt_required()
     def create_shipping_address(self):
         """Create a new shipping address for the authenticated user"""
 
         user = request.authenticated_user
-        params = json.loads(request.httprequest.data or "{}")
-        name = params.get("name")
-        email = params.get("email")
-        phone = params.get("phone")
-        street = params.get("street")
-        city = params.get("city")
-        zip = params.get("zip")
-        country = params.get("country")
+        data = json.loads(request.httprequest.data or "{}")
 
-        return self.handle(
-            lambda: get_shipping_address_service().create_shipping_address(
-                user=user,
-                name=name,
-                email=email,
-                phone=phone,
-                street=street,
-                city=city,
-                zip=zip,
-                country=country,
-            )
-        )
-
-    @http.route("/api/address", type="http", auth="none", methods=["GET"], csrf=False)
-    @JWTService.jwt_required
-    def get_shipping_address(self):
-        """Retrieve the authenticated user's shipping address information"""
-        user = request.authenticated_user
-        return self.handle(
-            lambda: get_shipping_address_service().get_shipping_address(user=user)
-        )
-
-    @http.route("/api/address", type="http", auth="none", methods=["PUT"], csrf=False)
-    @JWTService.jwt_required
-    def update_shipping_address(self, **kwargs):
-        """Update the authenticated user's shipping address information"""
-
-        user = request.authenticated_user
-        partner_id = kwargs.get("partner_id")
-
-        if not partner_id:
-            raise ValidationError("Partner ID is required")
-
-        params = json.loads(request.httprequest.data or "{}")
-
-        name = params.get("name")
-        email = params.get("email")
-        phone = params.get("phone")
-        street = params.get("street")
-        city = params.get("city")
-        zip = params.get("zip")
-        country = params.get("country")
-
-        return self.handle(
-            lambda: get_shipping_address_service().update_shipping_address(
-                user=user,
-                partner_id=partner_id,
-                name=name,
-                email=email,
-                phone=phone,
-                street=street,
-                city=city,
-                zip=zip,
-                country=country,
-            )
+        return self._success(
+            ShippingAddressService().create_address(user=user, data=data)
         )
 
     @http.route(
-        "/api/address/<int:partner_id>",
+        "/api/my/address/<int:address_id>",
         type="http",
-        auth="none",
+        auth="public",
+        methods=["PUT"],
+        csrf=False,
+    )
+    @JWTService.jwt_required()
+    def update_shipping_address(self, address_id):
+        """Update the authenticated user's shipping address information"""
+
+        user = request.authenticated_user
+
+        data = json.loads(request.httprequest.data or "{}")
+
+        try:
+            return self._success(
+                ShippingAddressService().update_address(
+                    user=user, partner_id=address_id, data=data
+                )
+            )
+        except ValidationError as ve:
+            return self._error(str(ve))
+
+    @http.route(
+        "/api/my/address/<int:partner_id>",
+        type="http",
+        auth="public",
         methods=["DELETE"],
         csrf=False,
     )
-    @JWTService.jwt_required
+    @JWTService.jwt_required()
     def delete_shipping_address(self, partner_id):
         """Update the authenticated user's shipping address information"""
 
         user = request.authenticated_user
 
-        return self.handle(
-            lambda: get_shipping_address_service().delete_shipping_address(
-                user=user, partner_id=partner_id
+        try:
+            return self._success(
+                ShippingAddressService().delete_address(
+                    user=user, partner_id=partner_id
+                )
             )
-        )
+        except ValidationError as ve:
+            return self._error(str(ve))

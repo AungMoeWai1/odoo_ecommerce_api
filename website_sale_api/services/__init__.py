@@ -10,4 +10,5 @@ from . import (
     profile_service,
     token_service,
     wishlist_service,
+    address_service,
 )

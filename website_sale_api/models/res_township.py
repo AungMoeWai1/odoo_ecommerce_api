@@ -15,3 +15,10 @@ class ResTownship(models.Model):
     state_id = fields.Many2one(
         comodel_name="res.country.state", string="State", required=True
     )
+    country_id = fields.Many2one(
+        comodel_name="res.country",
+        string="Country",
+        related="state_id.country_id",
+        store=True,
+        readonly=True,
+    )

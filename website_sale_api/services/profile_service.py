@@ -29,6 +29,7 @@ class ProfileService(BaseService):
             phone=user.phone,
             street=partner.street,
             city=partner.city,
+            country_id=partner.country_id.id,
             company_id=partner.company_id.id,
             company_name=partner.company_id.name,
             image_url=self._get_image_url(self.model_name, user.id),
