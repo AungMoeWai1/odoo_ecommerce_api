@@ -7,4 +7,6 @@ from . import (
     product_schema,
     profile_schema,
     address_schema,
+    delivery_method_schema,
+    review_schema,
 )

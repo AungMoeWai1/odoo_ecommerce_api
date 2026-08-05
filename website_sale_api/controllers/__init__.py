@@ -9,4 +9,6 @@ from . import (
     profile,
     wishlist,
     address,
+    delivery_method,
+    reviews,
 )

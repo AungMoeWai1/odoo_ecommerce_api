@@ -1,16 +1,16 @@
 """Schema definition for shipping methods in the Odoo eCommerce API."""
 
+from dataclasses import dataclass
 from typing import Optional
 
-from pydantic import BaseModel
 
-
-class ShippingMethodSchema(BaseModel):
-    """Pydantic schema for representing a shipping method"""
+@dataclass
+class DeliveryMethodSchema:
+    """Response schema for representing a delivery method"""
 
     id: int
     name: str
     website_description: Optional[str | bool]
     carrier_description: Optional[str | bool]
     price: float
-    currency: str
+    currency_id: int
