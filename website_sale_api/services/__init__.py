@@ -11,4 +11,6 @@ from . import (
     token_service,
     wishlist_service,
     address_service,
+    delivery_method_service,
+    review_service,
 )

@@ -36,6 +36,20 @@ class BaseService:
             [], limit=1, order="id asc"
         )
 
+    def _get_sale_order(self, website_id, user):
+        return (
+            self.env["sale.order"]
+            .sudo()
+            .search(
+                [
+                    ("website_id", "=", website_id),
+                    ("partner_id", "=", user.partner_id.id),
+                    ("state", "=", "draft"),
+                ],
+                limit=1,
+            )
+        )
+
     def _get_price_list(self, website):
         return website.pricelist_ids[0]
 

@@ -3,12 +3,13 @@
 # pylint: disable=too-few-public-methods
 
 from datetime import datetime
+from dataclasses import dataclass
 from typing import Optional
-
 from .pagination import PaginatedResponse
 
 
-class ReviewLineData(BaseModel):
+@dataclass
+class ReviewLineData:
     """Schema for individual review data"""
 
     id: int
@@ -19,6 +20,7 @@ class ReviewLineData(BaseModel):
     is_verified_purchase: Optional[bool] = None
 
 
+@dataclass
 class ReviewDataResponse(PaginatedResponse[ReviewLineData]):
     """Schema for paginated review data response"""
 

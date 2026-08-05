@@ -1,10 +1,10 @@
 """Controller for handling product reviews in the e-commerce API."""
 
-# pylint: disable=import-error
+# pylint: disable=import-error,too-few-public-methods
 from odoo import http
 from odoo.exceptions import ValidationError
 
-from ..services.review_service import get_review_service
+from ..services.review_service import ReviewService
 from .base import BaseAPI
 
 
@@ -22,9 +22,10 @@ class ReviewController(BaseAPI):
         """Fetch reviews for a given product template"""
 
         try:
-            result = get_review_service().get_reviews(
-                params=kwargs, product_template_id=product_template_id
+            return self._success(
+                ReviewService().get_reviews(
+                    kwargs=kwargs, product_template_id=product_template_id
+                )
             )
-            return self._success(**result.model_dump())
         except ValidationError as e:
-            return self._error(str(e))
+            return self._error(message=str(e), code=400)
