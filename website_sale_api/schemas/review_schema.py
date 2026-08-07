@@ -2,9 +2,10 @@
 
 # pylint: disable=too-few-public-methods
 
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
+
 from .pagination import PaginatedResponse
 
 

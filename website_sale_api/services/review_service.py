@@ -2,6 +2,7 @@
 
 # pylint: disable=too-few-public-methods,import-error,protected-access
 from typing import Any, Dict
+
 from ..schemas.review_schema import ReviewDataResponse, ReviewLineData
 from .pagination_service import PaginationService
 
@@ -31,7 +32,7 @@ class ReviewService(PaginationService):
             ("res_id", "=", product_template_id),
         ]
         paginated = self.get_paginated_from_kwargs(kwargs)
-        product_tmpl = self._get_product(product_template_id)
+        product_tmpl = self._get_product(product_template_id).sudo()
         average_rating = product_tmpl.rating_avg
 
         return ReviewDataResponse(
@@ -63,7 +64,7 @@ class ReviewService(PaginationService):
         rating_value = float(kwargs["rating_id"])
         feedback = kwargs.get("feedback")
 
-        rating = product._create_review(
+        rating = product.sudo()._create_review(
             user=user, rating_value=rating_value, feedback=feedback
         )
 

@@ -2,11 +2,13 @@
 
 # pylint: disable=import-error,too-few-public-methods
 import json
+
 from odoo import http
-from odoo.http import request
 from odoo.exceptions import ValidationError
-from ..services.token_service import JWTService
+from odoo.http import request
+
 from ..services.review_service import ReviewService
+from ..services.token_service import JWTService
 from .base import BaseAPI
 
 
@@ -35,7 +37,7 @@ class ReviewController(BaseAPI):
     @http.route(
         "/api/product/<int:product_template_id>/reviews",
         type="http",
-        auth="user",
+        auth="public",
         methods=["POST"],
         csrf=False,
     )

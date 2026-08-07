@@ -1,7 +1,8 @@
 """Models for rating"""
+
 # pylint: disable=too-few-public-methods,protected-access,import-error
 
-from odoo import  models
+from odoo import models
 
 
 class Rating(models.Model):

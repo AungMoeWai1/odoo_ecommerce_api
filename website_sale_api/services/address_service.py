@@ -3,16 +3,16 @@
 # pylint: disable=too-few-public-methods, import-error,too-many-arguments,too-many-positional-arguments,redefined-builtin,raise-missing-from,consider-using-in
 from odoo.exceptions import ValidationError
 from odoo.http import request
-from .base_service import BaseService
 
 from ..schemas.address_schema import (
+    AddressLine,
+    ShippingAddressResponse,
     State,
     StateResponse,
     Township,
     TownshipResponse,
-    AddressLine,
-    ShippingAddressResponse,
 )
+from .base_service import BaseService
 
 
 class ShippingAddressService(BaseService):
@@ -67,16 +67,6 @@ class ShippingAddressService(BaseService):
                 )
             )
         return ShippingAddressResponse(addresses=addresses)
-
-    def _get_country(self, country):
-        """Helper method to retrieve country record by name"""
-        country_rec = (
-            request.env["res.country"].sudo().search([("name", "=", country)], limit=1)
-        )
-        if not country_rec:
-            raise ValidationError(f"Country '{country}' not found")
-
-        return country_rec
 
     def create_address(self, user, data):
         """Create a new shipping address for the user"""
