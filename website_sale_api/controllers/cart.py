@@ -2,6 +2,7 @@
 
 # pylint:disable=import-error,broad-exception-caught
 from odoo import http
+from odoo.exceptions import ValidationError
 from odoo.http import request
 
 from ..services.cart_service import CartService
@@ -21,8 +22,12 @@ class CartController(BaseAPI):
             result = CartService().get_current_cart(user)
 
             return self._success(data=result)
+        except ValidationError as e:
+            return self._error(message=str(e), code=400)
         except Exception as e:
-            return {"error": str(e)}
+            return self._error(
+                message=f"An internal server error occurred. {e}", code=500
+            )
 
     @http.route("/api/cart", methods=["POST"], type="http", auth="public", csrf=False)
     @JWTService.jwt_required()
@@ -33,8 +38,10 @@ class CartController(BaseAPI):
             result = CartService().add_to_cart(user)
 
             return self._success(result)
+        except ValidationError as e:
+            return self._error(message=str(e), code=400)
         except Exception as e:
-            return self._error(str(e))
+            return self._error(message=f"Unexpected error in add_to_cart.{e}", code=500)
 
     @http.route(
         "/api/cart/line/<int:line_id>",
@@ -53,5 +60,9 @@ class CartController(BaseAPI):
 
             return self._success(result)
 
+        except ValidationError as e:
+            return self._error(message=str(e), code=400)
         except Exception as e:
-            return self._error(message=str(e))
+            return self._error(
+                message=f"Unexpected error in delete_cart_item.{e}", code=500
+            )

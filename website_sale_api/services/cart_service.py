@@ -3,6 +3,7 @@
 # pylint:disable=import-error,broad-exception-caught,protected-access
 import json
 
+from odoo.exceptions import ValidationError
 from odoo.http import request
 
 from ..schemas.cart_schema import CartItemResponse, CartResponse
@@ -62,34 +63,29 @@ class CartService(BaseService):
 
     def add_to_cart(self, user):
         """Add product to cart"""
-        try:
-            values = self._parse_request_data()
-            order = self._get_or_create_cart(user)
-            self._add_product_to_order(order, values["product_id"], values["qty"])
-
+        values = self._parse_request_data()
+        order = self._get_or_create_cart(user)
+        result = self._add_product_to_order(order, values["product_id"], values["qty"])
+        if result["line_id"]:
             return {
                 "status": "success",
                 "id": order.id,
                 "message": "Product added to cart",
             }
-
-        except Exception as e:
-            return self._error_response(f"Product added fail to cart. {e}")
+        raise ValidationError("Product can't added to cart.")
 
     def delete_cart_item(self, line_id, user):
         """Delete item from cart"""
-        try:
-            order = self._get_or_create_cart(user)
-            self._delete_order_line(order, line_id)
-
-            return {
-                "status": "success",
-                "id": line_id,
-                "message": "order Line deleted successfully",
-            }
-
-        except Exception as e:
-            return self._error_response(str(e))
+        order = self._get_or_create_cart(user)
+        line = order.order_line.filtered(lambda l: l.id == line_id)
+        if not line:
+            raise ValidationError(f"Order line {line_id} not found.")
+        line.unlink()
+        return {
+            "status": "success",
+            "id": line_id,
+            "message": "Order line deleted successfully",
+        }
 
     # ==================== Private Helper Methods ====================
     def _parse_request_data(self):
@@ -113,12 +109,6 @@ class CartService(BaseService):
 
     def _add_product_to_order(self, order, product_id, quantity):
         """Add product to order with proper context"""
-        order.with_context(skip_cart_verification=True)._cart_add(product_id, quantity)
-
-    def _delete_order_line(self, order, line_id):
-        """Delete specific order line"""
-        order.order_line.filtered(lambda l: l.id == line_id).unlink()
-
-    def _error_response(self, message):
-        """Build error response"""
-        return {"response": "error", "message": message}
+        return order.with_context(skip_cart_verification=True)._cart_add(
+            product_id, quantity
+        )
