@@ -1,6 +1,6 @@
 """Service for handling product reviews in the e-commerce API."""
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,import-error,protected-access
 from typing import Any, Dict
 from ..schemas.review_schema import ReviewDataResponse, ReviewLineData
 from .pagination_service import PaginationService
@@ -14,7 +14,6 @@ class ReviewService(PaginationService):
         self.model_name = "rating.rating"
         self.fields = [
             "id",
-            "consumed",
             "feedback",
             "partner_id",
             "create_date",
@@ -32,7 +31,7 @@ class ReviewService(PaginationService):
             ("res_id", "=", product_template_id),
         ]
         paginated = self.get_paginated_from_kwargs(kwargs)
-        product_tmpl = self.env["product.template"].browse(product_template_id)
+        product_tmpl = self._get_product(product_template_id)
         average_rating = product_tmpl.rating_avg
 
         return ReviewDataResponse(
@@ -46,14 +45,43 @@ class ReviewService(PaginationService):
             has_prev=paginated["has_prev"],
         )
 
+    def post_rating_comment(self, kwargs, product_template_id, user):
+        """Create a product review for the given user.
+
+        The review consists of:
+        - a rating record
+        - updated product rating statistics
+        - an optional chatter message when feedback is provided
+
+        :param dict kwargs: Review payload.
+        :param int product_template_id: Product template ID.
+        :param res.users user: Authenticated user.
+        :return: API response containing the created review ID.
+        :rtype: dict
+        """
+        product = self._get_product(product_template_id)
+        rating_value = float(kwargs["rating_id"])
+        feedback = kwargs.get("feedback")
+
+        rating = product._create_review(
+            user=user, rating_value=rating_value, feedback=feedback
+        )
+
+        return {
+            "id": rating.id,
+            "message": "Comment created successfully",
+        }
+
     def _format_review(self, review: Dict[str, Any]) -> ReviewLineData:
         return ReviewLineData(
             id=review["id"],
-            customer_name=(
-                review["partner_id"][1] if review.get("partner_id") else "Unknown"
-            ),
+            customer_id=review["partner_id"][0],
+            customer_name=review["partner_id"][1],
             rating=review["rating"],
             date=review["create_date"],
             comment=review["feedback"],
-            is_verified_purchase=review["consumed"],
         )
+
+    def _get_product(self, product_template_id):
+        """Return the requested product template."""
+        return self.env["product.template"].browse(product_template_id)

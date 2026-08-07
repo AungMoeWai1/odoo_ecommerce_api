@@ -14,10 +14,10 @@ class ReviewLineData:
 
     id: int
     customer_name: str
+    customer_id: int
     rating: float
     comment: Optional[str] = None
     date: Optional[datetime] = None
-    is_verified_purchase: Optional[bool] = None
 
 
 @dataclass
