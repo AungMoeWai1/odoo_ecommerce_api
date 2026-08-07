@@ -12,12 +12,12 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     def _get_combination_info(
-            self,
-            combination=False,
-            product_id=False,
-            add_qty=1.0,
-            uom_id=False,
-            only_template=False,
+        self,
+        combination=False,
+        product_id=False,
+        add_qty=1.0,
+        uom_id=False,
+        only_template=False,
     ):
         """
         if context of website present, get the value of website
@@ -91,12 +91,12 @@ class ProductTemplate(models.Model):
             )
 
         if (
-                product_or_template.type == "combo"
-                and website.show_line_subtotals_tax_selection == "tax_included"
-                and not all(
-            tax.price_include
-            for tax in product_or_template.sudo().combo_ids.combo_item_ids.product_id.taxes_id
-        )
+            product_or_template.type == "combo"
+            and website.show_line_subtotals_tax_selection == "tax_included"
+            and not all(
+                tax.price_include
+                for tax in product_or_template.sudo().combo_ids.combo_item_ids.product_id.taxes_id
+            )
         ):
             combination_info["tax_disclaimer"] = _(
                 "Final price may vary based on selection. Tax will be calculated at checkout."
@@ -105,7 +105,7 @@ class ProductTemplate(models.Model):
         return combination_info
 
     def _get_additionnal_combination_info(
-            self, product_or_template, quantity, uom, date, website
+        self, product_or_template, quantity, uom, date, website
     ):
         """Compute additional combination info, based on given parameters.
 
@@ -148,7 +148,7 @@ class ProductTemplate(models.Model):
             )
 
         has_discounted_price = (
-                currency.compare_amounts(price_before_discount, pricelist_price) == 1
+            currency.compare_amounts(price_before_discount, pricelist_price) == 1
         )
         combination_info = {
             "list_price": max(pricelist_price, price_before_discount),
@@ -159,11 +159,11 @@ class ProductTemplate(models.Model):
         }
 
         if (
-                not has_discounted_price
-                and product_or_template.compare_list_price
-                and self.env["res.groups"]._is_feature_enabled(
-            "website_sale.group_product_price_comparison"
-        )
+            not has_discounted_price
+            and product_or_template.compare_list_price
+            and self.env["res.groups"]._is_feature_enabled(
+                "website_sale.group_product_price_comparison"
+            )
         ):
             # depending on product price, should be removed from combination info in the future
             combination_info["compare_list_price"] = (
@@ -198,7 +198,7 @@ class ProductTemplate(models.Model):
         combination_info.update(
             {
                 "prevent_zero_price_sale": website.prevent_zero_price_sale
-                                           and float_is_zero(
+                and float_is_zero(
                     combination_info["price"],
                     precision_rounding=currency.rounding,
                 ),
@@ -211,7 +211,7 @@ class ProductTemplate(models.Model):
         )
 
         if self.env["res.groups"]._is_feature_enabled(
-                "website_sale.group_show_uom_price"
+            "website_sale.group_show_uom_price"
         ):
             price_per_product_uom = uom._compute_price(
                 price=combination_info["price"], to_unit=self.uom_id
@@ -231,3 +231,46 @@ class ProductTemplate(models.Model):
             combination_info["compare_list_price"] = 0
 
         return combination_info
+
+    def _create_review(self, user, rating_value, feedback):
+        """Create a product review and update all related records.
+
+        This method performs the complete review workflow:
+        - Creates a ``rating.rating`` record linked to the product.
+        - Updates the product's rating statistics via ``rating_apply``.
+        - Posts the user's feedback to the product chatter (if provided).
+        - Links the chatter message to the rating record.
+
+        :param res.users user: User submitting the review.
+        :param float rating_value: Rating score (e.g. 1.0 to 5.0).
+        :param str feedback: Optional review comment.
+        :return: The created rating record.
+        :rtype: rating.rating
+        """
+        self.ensure_one()
+
+        # Create the rating record associated with this product.
+        rating = self.env["rating.rating"].create_product_rating(
+            product=self,
+            user=user,
+            rating_value=rating_value,
+        )
+        # Update the product's aggregated rating information.
+        self.rating_apply(
+            rate=rating_value,
+            rating=rating,
+            feedback=feedback,
+        )
+        # Create a chatter message when the user provides written feedback
+        # and link it to the rating record for traceability.
+        if feedback:
+            message = self.message_post(
+                body=feedback,
+                message_type="comment",
+                subtype_xmlid="mail.mt_comment",
+                author_id=user.partner_id.id,
+                rating_id=rating.id,
+            )
+            rating.message_id = message.id
+
+        return rating
