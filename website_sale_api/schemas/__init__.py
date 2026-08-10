@@ -7,6 +7,7 @@ from . import (
     category_schema,
     delivery_method_schema,
     pagination,
+    payment_methods_schema,
     product_schema,
     profile_schema,
     review_schema,

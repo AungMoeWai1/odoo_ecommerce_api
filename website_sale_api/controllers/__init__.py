@@ -7,6 +7,7 @@ from . import (
     cart,
     category,
     delivery_method,
+    payment_method,
     portal,
     product,
     profile,

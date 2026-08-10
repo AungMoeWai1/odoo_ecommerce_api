@@ -2,6 +2,7 @@
 
 from . import (
     delivery_carrier,
+    payment_method,
     product_template,
     product_wishlist,
     rating,
