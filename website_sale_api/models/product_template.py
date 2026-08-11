@@ -274,3 +274,18 @@ class ProductTemplate(models.Model):
             rating.message_id = message.id
 
         return rating
+
+    def _update_review(self, rating, feedback):
+        """Update the review feedback and synchronize its chatter message."""
+
+        self.ensure_one()
+
+        # Use Odoo's mail.thread mechanism to keep the rating and its
+        # associated chatter message synchronized.
+        self.sudo()._message_update_content(
+            rating.message_id,
+            body=feedback,
+            rating_value=float(rating.rating),
+        )
+
+        return rating
