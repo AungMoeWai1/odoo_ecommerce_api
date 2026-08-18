@@ -2,9 +2,12 @@
 
 # pylint: disable=too-few-public-methods,import-error,protected-access
 from typing import Any, Dict
+
 from odoo import tools
+
 from ..schemas.review_schema import ReviewDataResponse, ReviewLineData
 from .pagination_service import PaginationService
+
 
 class ReviewService(PaginationService):
     """Service class for handling product reviews in the e-commerce API"""
@@ -19,7 +22,7 @@ class ReviewService(PaginationService):
             "create_date",
             "rating",
             "res_id",
-            "message_id"
+            "message_id",
         ]
         self.website = self._get_current_website()
 
@@ -93,7 +96,7 @@ class ReviewService(PaginationService):
             "message": "Comment updated successfully",
         }
 
-    def delete_rating_comment(self,user, rating_id):
+    def delete_rating_comment(self, user, rating_id):
         """Delete an existing product review owned by the authenticated user."""
         rating = self.get_record_by_id(rating_id)
         if rating.partner_id != user.partner_id:
@@ -106,17 +109,11 @@ class ReviewService(PaginationService):
             "message": "Comment deleted successfully",
         }
 
-
-
     def _format_review(self, review: Dict[str, Any]) -> ReviewLineData:
         comment = review["feedback"] or ""
         if review.get("message_id"):
-            message = self.env["mail.message"].browse(
-                review["message_id"][0]
-            )
-            comment = tools.mail.html_to_inner_content(
-                message.body or ""
-            ).strip()
+            message = self.env["mail.message"].browse(review["message_id"][0])
+            comment = tools.mail.html_to_inner_content(message.body or "").strip()
 
         return ReviewLineData(
             id=review["id"],

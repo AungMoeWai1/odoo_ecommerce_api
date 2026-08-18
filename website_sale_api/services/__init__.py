@@ -6,6 +6,7 @@ from . import (
     base_service,
     cart_service,
     categroy_service,
+    checkout_service,
     delivery_method_service,
     pagination_service,
     payment_method_service,

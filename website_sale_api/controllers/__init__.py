@@ -6,6 +6,7 @@ from . import (
     base,
     cart,
     category,
+    checkout,
     delivery_method,
     payment_method,
     portal,

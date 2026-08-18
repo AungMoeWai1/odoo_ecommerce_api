@@ -2,6 +2,7 @@
 
 # pylint: disable=import-error,too-few-public-methods
 import json
+
 from odoo import http
 from odoo.exceptions import ValidationError
 from odoo.http import request
@@ -72,7 +73,7 @@ class ReviewController(BaseAPI):
             return self._success(
                 ReviewService().update_rating_comment(
                     data=data, user=user, rating_id=rating_id
-               )
+                )
             )
         except ValidationError as e:
             return self._error(message=str(e), code=400)
@@ -91,9 +92,7 @@ class ReviewController(BaseAPI):
         try:
             user = request.authenticated_user
             return self._success(
-                ReviewService().delete_rating_comment(
-                   user=user, rating_id=rating_id
-                )
+                ReviewService().delete_rating_comment(user=user, rating_id=rating_id)
             )
         except ValidationError as e:
             return self._error(message=str(e), code=400)
