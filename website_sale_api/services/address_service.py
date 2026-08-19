@@ -34,9 +34,9 @@ class ShippingAddressService(BaseService):
 
     def get_state_townships(self, country_id):
         """get townships excluding a specific country."""
-        townships = request.env["res.township"].search(
+        townships = (request.env["res.township"].sudo().search(
             [("country_id", "=", country_id)]
-        )
+        ))
         return TownshipResponse(
             country_id=country_id,
             townships=[
