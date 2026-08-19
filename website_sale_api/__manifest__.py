@@ -13,6 +13,10 @@
         "views/res_partner_views.xml",
         "views/address_templates.xml",
         "views/delivery_carrier_views.xml",
+        "views/shipping_status_views.xml",
+        "views/sale_order_views.xml",
+        "data/shipping_status_data.xml",
+        "views/sale_portal_templates.xml",
     ],
     "assets": {
         "web.assets_frontend": [

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Draft Status -->
+        <record id="shipping_status_draft" model="shipping.status">
+            <field name="name">Draft</field>
+        </record>
+
+        <!-- Order Confirmed Status -->
+        <record id="shipping_status_order_confirmed" model="shipping.status">
+            <field name="name">Order Confirmed</field>
+        </record>
+    </data>
+</odoo>

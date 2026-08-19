@@ -71,6 +71,10 @@ class BaseService:
             self.default_domain, self.fields, limit=limit, offset=offset, order=order
         )
 
+    def search(self):
+        """Search the relative domain of records"""
+        return self._get_model().search(self.default_domain)
+
     def get_record_by_id(self, record_id):
         """Get a single record by ID."""
         record = self._get_model().browse(record_id)

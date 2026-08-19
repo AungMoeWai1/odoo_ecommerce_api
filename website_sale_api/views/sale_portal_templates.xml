@@ -1,0 +1,17 @@
+<odoo>
+    <template id="website_sale_api.portal_my_orders" inherit_id="sale.portal_my_orders">
+        <xpath expr="//th[@name='order_delivery']" position="replace"/>
+        <xpath expr="//td[@name='order_delivery_status']" position="replace"/>
+
+        <th name="order_total" position="before">
+            <th class="text-end" name="Shipping Status">Shipping Status</th>
+        </th>
+        <td name="order_amount_total" position="before">
+            <td class="text-end" name="order_shipping_status">
+                <span>
+                    <t t-out="order.shipping_status_id.name"/>
+                </span>
+            </td>
+        </td>
+    </template>
+</odoo>

@@ -1,42 +1,50 @@
 """Schema definitions for Sale Order models."""
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,too-many-instance-attributes
+from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from .pagination import PaginatedResponse
 
 
-class CurrencyData(BaseModel):
-    """Schema for currency data."""
-
-    id: int
-    name: str
-    symbol: Optional[str] = None
-
-
-class OrderLineData(BaseModel):
+@dataclass
+class OrderLineData:
     """Schema for individual order line data."""
 
-    product_name: Optional[str | bool] = None
-    variant: Optional[str | bool] = None
+    product_name: str
+    # variant: str
     quantity: int
     price: float
+    # image_url: str
+    subtotal: float
 
 
-class OrderData(BaseModel):
+@dataclass
+class OrderData:
     """Schema for individual sale order data."""
 
     id: int
+    reference: str
+    date_order: datetime
     name: str
-    date_order: Optional[datetime]
-    order_status: str
+    status: str
+    currency: str
     delivery_status: str
-    amount_total: float
+    total: float
     item_count: int
-    currency: CurrencyData
-    items: List[OrderLineData]
 
 
+@dataclass
+class OrderDetailData(OrderData):
+    """Schema for individual sale order data."""
+
+    customer_id: int
+    billing_address_id: int
+    shipping_address_id: int
+    line: List[OrderLineData]
+
+
+@dataclass
 class OrderDataResponse(PaginatedResponse[OrderData]):
     """Paginated response schema for sale orders."""

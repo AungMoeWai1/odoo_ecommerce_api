@@ -2,66 +2,37 @@
 
 # pylint: disable=import-error, too-few-public-methods
 
-from odoo.exceptions import ValidationError
+from dataclasses import asdict
+
+from odoo.http import request
 
 from ..schemas.order_schema import (
-    CurrencyData,
     OrderData,
     OrderDataResponse,
+    OrderDetailData,
     OrderLineData,
 )
-from .base_service import BaseService
 from .pagination_service import PaginationService
 
 
-class OrderService(BaseService):
+class OrderService(PaginationService):
     """Service for order-related operations."""
 
-    model_name = "sale.order"
-    fields = [
-        "id",
-        "name",
-        "date_order",
-        "amount_total",
-        "delivery_status",
-        "state",
-        "currency_id",
-    ]
+    def __init__(self, env=None):
+        super().__init__(env)
+        self.model_name = "sale.order"
+        self.website = self._get_current_website()
 
-    def get_orders(self, user, params, website_id):
+    def get_orders(self, user, kwargs):
         """Retrieve a list of sale orders with pagination."""
         partner = user.partner_id
-        if not partner:
-            raise ValidationError("Partner not found")
 
-        pager = PaginationService(params)
+        self.default_domain = self._get_order_domain(partner, self.website.id)
 
-        website = self._get_website(website_id)
-
-        domain = self._get_order_domain(partner, website)
-
-        sort = params.get("sort", "id")
-
-        paginated_data = pager.get_paginated_records(
-            model_name=self.model_name,
-            domain=domain,
-            fields=self.fields,
-            sort=sort,
-        )
-
-        order_ids = [item["id"] for item in paginated_data["data"]]
-        order_records = (
-            self.env[self.model_name]
-            .sudo()
-            .search(
-                [("id", "in", order_ids)],
-                order=sort,
-            )
-        )
-        orders = [self._prepare_order_data(order) for order in order_records]
+        paginated_data = self.get_paginated_from_kwargs(kwargs)
 
         return OrderDataResponse(
-            data=orders,
+            data=[self._format_order(o) for o in paginated_data["data"]],
             size=paginated_data["size"],
             total=paginated_data["total"],
             page=paginated_data["page"],
@@ -70,83 +41,68 @@ class OrderService(BaseService):
             has_prev=paginated_data["has_prev"],
         )
 
-    def get_order(self, user, website_id, order_id):
+    def get_order_detail(self, user, order_id):
         """Retrieve a single sale order by ID."""
         partner = user.partner_id
 
-        if not partner:
-            raise ValidationError("Partner not found")
+        self.default_domain = self._get_order_domain(partner, self.website.id)
+        self.default_domain.append(("id", "=", order_id))
+        order = self.search()
+        return self.format_order_detail(order)
 
-        website = self._get_website(website_id)
-
-        model = self.env[self.model_name].sudo()
-
-        order = model.search(
-            [
-                ("id", "=", order_id),
-                ("website_id", "=", website.id),
-                ("partner_id", "=", partner.id),
-            ],
-            limit=1,
-        )
-
-        if not order:
-            raise ValidationError("Order not found")
-        return self._prepare_order_data(order)
-
-    def _prepare_order_data(self, order):
-        """Prepare sale order response data."""
-
-        order_lines = []
-
-        for line in order.order_line:
-            if line.display_type:
-                continue
-
-            order_lines.append(self._prepare_order_line_data(line))
-
-        return OrderData(
-            id=order.id,
-            name=order.name,
-            date_order=order.date_order,
-            order_status=order.state,
-            delivery_status=order.delivery_status or "",
-            amount_total=order.amount_total,
-            currency=CurrencyData(
-                id=order.currency_id.id,
-                name=order.currency_id.name,
-                symbol=order.currency_id.symbol,
-            ),
-            item_count=len(order_lines),
-            items=order_lines,
-        )
-
-    def _prepare_order_line_data(self, line):
-        """Prepare sale order line response data."""
-
-        product = line.product_id
-
-        return OrderLineData(
-            product_name=product.name,
-            variant=product.display_name,
-            quantity=int(line.product_uom_qty),
-            price=line.price_unit,
-        )
-
-    def _get_order_domain(self, partner, website):
-        domain = [("partner_id", "=", partner.id), ("website_id", "=", website.id)]
+    def _get_order_domain(self, partner, website_id):
+        domain = [
+            ("partner_id", "=", partner.id),
+            ("website_id", "=", website_id),
+            ("state", "=", "sale"),
+        ]
         return domain
 
-    def _get_website(self, website_id):
-        website = self.env["website"].sudo().browse(website_id)
+    def format_order_detail(self, order):
+        """Format order detail data."""
+        order_data = self._format_order(order)
+        return OrderDetailData(
+            **asdict(order_data),
+            customer_id=order.partner_id.id,
+            billing_address_id=order.partner_invoice_id.id,
+            shipping_address_id=order.partner_shipping_id.id,
+            line=self.getorderline(order)
+        )
 
-        if not website.exists():
-            raise ValidationError("Website not found")
+    def getorderline(self, order):
+        """Format order line data."""
+        orderlines = []
+        for line in order["order_line"]:
+            line_data = request.env["sale.order.line"].sudo().browse(line["id"])
+            orderlines.append(
+                OrderLineData(
+                    product_name=line_data.product_template_id.name,
+                    quantity=line_data.product_uom_qty,
+                    price=line_data.price_unit,
+                    subtotal=line_data.price_subtotal,
+                )
+            )
+        return orderlines
 
-        return website
+    def _format_order(self, order) -> OrderData:
+        """Convert raw product data to ProductData schema."""
 
+        def get_field(field, index=1):
+            """Extract field value from dict or object."""
+            if isinstance(order, dict):
+                value = order.get(field)
+                return value[index] if value else None
+            obj = getattr(order, field, None)
+            return obj.name if obj else None
 
-def get_order_service():
-    """Return OrderService instance."""
-
-    return OrderService()
+        return OrderData(
+            id=order["id"],
+            name=order["name"],
+            reference=order["reference"],
+            date_order=order["date_order"],
+            status=order["state"],
+            currency=get_field("currency_id"),
+            delivery_status=get_field("shipping_status_id"),
+            total=order["amount_total"],
+            item_count=len(order["order_line"]),
+        )

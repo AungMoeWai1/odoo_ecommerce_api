@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_shipping_status_list" model="ir.ui.view">
+        <field name="name">shipping.status.list</field>
+        <field name="model">shipping.status</field>
+        <field name="arch" type="xml">
+            <list string="Shipping Status" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <!-- Form View -->
+    <record id="view_shipping_status_form" model="ir.ui.view">
+        <field name="name">shipping.status.form</field>
+        <field name="model">shipping.status</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <div>
+                        <field name="sequence"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_shipping_status" model="ir.actions.act_window">
+        <field name="name">Shipping Status</field>
+        <field name="res_model">shipping.status</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Shipping Status
+            </p>
+            <p>
+                Manage Shipping Status.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_shipping_status"
+              name="Shipping Status"
+              parent="website_sale.menu_catalog"
+              action="action_shipping_status"
+              sequence="20"/>
+
+</odoo>
