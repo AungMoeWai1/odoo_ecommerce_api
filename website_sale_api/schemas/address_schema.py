@@ -44,6 +44,7 @@ class AddressLine:
 
     id: int
     name: str
+    email:str
     phone: Optional[str] = None
     street: Optional[str] = None
     city: Optional[str] = None

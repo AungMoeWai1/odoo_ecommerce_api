@@ -21,6 +21,7 @@ class ShippingAddressService(BaseService):
     def __init__(self):
         super().__init__()
         self.model_name = "res.partner"
+        self.website = self._get_current_website()
 
     def get_state(self, country_id):
         """Get state for a country"""
@@ -56,6 +57,7 @@ class ShippingAddressService(BaseService):
                 AddressLine(
                     id=address.id,
                     name=address.name,
+                    email=address.email,
                     phone=address.phone,
                     street=address.street,
                     city=address.city,
@@ -105,3 +107,9 @@ class ShippingAddressService(BaseService):
         self._delete(address)
 
         return {"id": address.id, "message": "Address deleted successfully"}
+
+    def process_address_update(self, user, data):
+        """Update the user's shipping address with the provided information"""
+        order = self._get_sale_order(self.website.id, user)
+        self._write(order, data)
+        return {"order_id": order.id, "message": "Address update successfully"}

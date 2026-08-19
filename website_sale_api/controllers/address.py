@@ -109,3 +109,19 @@ class AddressAPI(BaseAPI):
             )
         except ValidationError as ve:
             return self._error(str(ve))
+
+    @http.route(
+        "/api/order/address", type="http", auth="public", methods=["PUT"], csrf=False
+    )
+    @JWTService.jwt_required()
+    def update_order_address(self):
+        """Update Shipping & Billing address of order"""
+
+        user = request.authenticated_user
+        data = json.loads(request.httprequest.data or "{}")
+        try:
+            return self._success(
+                ShippingAddressService().process_address_update(user=user, data=data)
+            )
+        except ValidationError as err:
+            return self._error(str(err))
