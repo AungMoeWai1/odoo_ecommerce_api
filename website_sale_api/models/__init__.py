@@ -9,6 +9,6 @@ from . import (
     res_country_state,
     res_partner,
     res_township,
-    sale_order,
     shipping_status,
+    sale_order,
 )
