@@ -32,7 +32,7 @@ class ProfileService(BaseService):
             country_id=partner.country_id.id,
             company_id=partner.company_id.id,
             company_name=partner.company_id.name,
-            image_url=self._get_image_url(self.model_name, user.id),
+            image_url=self._get_image_url(self.model_name, user.id, size="image_1024"),
         )
 
     def update_profile_value(self, user, data):

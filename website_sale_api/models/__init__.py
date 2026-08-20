@@ -1,6 +1,7 @@
 """Initialization of the schemas package for website_sale_api module"""
 
 from . import (
+    res_users,
     delivery_carrier,
     payment_method,
     product_template,

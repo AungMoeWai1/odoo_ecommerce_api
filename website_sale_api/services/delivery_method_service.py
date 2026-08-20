@@ -35,7 +35,9 @@ class DeliveryMethodService(BaseService):
             self.env["delivery.carrier"].sudo().browse(delivery_method_id).exists()
         )
         order_sudo._set_delivery_method(delivery_method_sudo)
-        return {"order_id": order_sudo.id,
-                "delivery_amount": order_sudo.amount_delivery,
-                "total_amount": order_sudo.amount_total,
-                "message": "Delivery method has been added."}
+        return {
+            "order_id": order_sudo.id,
+            "delivery_amount": order_sudo.amount_delivery,
+            "total_amount": order_sudo.amount_total,
+            "message": "Delivery method has been added.",
+        }
