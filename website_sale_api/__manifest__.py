@@ -6,7 +6,14 @@
     "author": "SME Intellect",
     "website": "https://www.smeintellect.com",
     "license": "LGPL-3",
-    "depends": ["web", "product", "website_sale", "stock", "website_sale_wishlist"],
+    "depends": [
+        "web",
+        "product",
+        "website_sale",
+        "stock",
+        "website_sale_collect",
+        "website_sale_wishlist",
+    ],
     "data": [
         "security/ir.model.access.csv",
         "views/res_township_views.xml",

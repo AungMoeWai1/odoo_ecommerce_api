@@ -13,35 +13,41 @@ class AuthService:
     def authenticate_user(self):
         """Authenticate user and return user record"""
         try:
-            credential = json.loads(request.httprequest.data)
-            credential["type"] = "password"
-
-            auth_info = request.session.authenticate(request.env, credential)
-            return {"uid": auth_info["uid"], "login": credential["login"]}
-
-        except (json.JSONDecodeError, KeyError, Exception):
+            data = json.loads(request.httprequest.data)
+            auth = self._authenticate(data["login"], data["password"])
+            return {"uid": auth["uid"], "login": data["login"]}
+        except Exception:
             return False
 
     def create_user(self):
-        """Create a new portal user"""
-        params = json.loads(request.httprequest.data)
-
+        """Create a new portal user and authenticate"""
         try:
-            # Create portal user using signup
-            request.env["res.users"].sudo().signup(
+            data = json.loads(request.httprequest.data)
+            self._create_user(data)
+            auth = self._authenticate(data["login"], data["password"])
+            return {"uid": auth["uid"], "login": data["login"]}
+        except Exception as e:
+            return ValidationError(str(e))
+
+    def _create_user(self, data):
+        """Create a new user"""
+        return (
+            request.env["res.users"]
+            .sudo()
+            .signup(
                 {
-                    "name": params["name"],
-                    "login": params["login"],
-                    "password": params["password"],
+                    "name": data["name"],
+                    "login": data["login"],
+                    "password": data["password"],
                 }
             )
-            user = request.env["res.users"].search(
-                [("login", "=", params["login"])], limit=1
-            )
-            return {"uid": user.id, "login": user.login}
+        )
 
-        except Exception as e:
-            return ValidationError(e)
+    def _authenticate(self, login, password):
+        """Authenticate user"""
+        return request.session.authenticate(
+            request.env, {"login": login, "password": password, "type": "password"}
+        )
 
     def change_user_password(self):
         """Change password after validating old password"""
