@@ -4,6 +4,7 @@
 
 from dataclasses import asdict
 
+from odoo.exceptions import ValidationError
 from odoo.http import request
 
 from ..schemas.order_schema import (
@@ -48,7 +49,9 @@ class OrderService(PaginationService):
         self.default_domain = self._get_order_domain(partner, self.website.id)
         self.default_domain.append(("id", "=", order_id))
         order = self.search()
-        return self.format_order_detail(order)
+        if order:
+            return self.format_order_detail(order)
+        raise ValidationError("Order not found")
 
     def _get_order_domain(self, partner, website_id):
         domain = [

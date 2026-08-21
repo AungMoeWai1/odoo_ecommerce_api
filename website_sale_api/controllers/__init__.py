@@ -8,6 +8,7 @@ from . import (
     category,
     checkout,
     delivery_method,
+    invoice,
     order,
     payment_method,
     portal,

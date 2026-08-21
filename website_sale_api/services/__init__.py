@@ -8,6 +8,7 @@ from . import (
     categroy_service,
     checkout_service,
     delivery_method_service,
+    invoice_service,
     order_service,
     pagination_service,
     payment_method_service,
