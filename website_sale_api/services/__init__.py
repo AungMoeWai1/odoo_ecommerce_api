@@ -17,4 +17,5 @@ from . import (
     review_service,
     token_service,
     wishlist_service,
+    ribbon_service,
 )
