@@ -15,4 +15,5 @@ from . import (
     profile,
     reviews,
     wishlist,
+    ribbon,
 )

@@ -12,4 +12,5 @@ from . import (
     product_schema,
     profile_schema,
     review_schema,
+    ribbon_schema,
 )
