@@ -50,111 +50,105 @@ class AuthController(BaseAPI):
             )
         )
 
+    @http.route(
+        "/api/auth/request_reset_password",
+        type="http",
+        auth="public",
+        methods=["POST"],
+        csrf=False,
+    )
+    @ApiKeyService.api_key_required()
+    def request_reset_code(self):
+        """Create a new user and return JWT token"""
+        try:
+            code = AuthService().request_code()
 
-@http.route(
-    "/api/auth/request_reset_password",
-    type="http",
-    auth="public",
-    methods=["POST"],
-    csrf=False,
-)
-@ApiKeyService.api_key_required()
-def request_reset_code(self):
-    """Create a new user and return JWT token"""
-    try:
-        code = AuthService().request_code()
+            return self._success(code)
+        except ValidationError as e:
+            return self._error(message=str(e), code=400)
+        except Exception as e:
+            return self._error(message=str(e), code=500)
 
-        return self._success(code)
-    except ValidationError as e:
-        return self._error(message=str(e), code=400)
-    except Exception as e:
-        return self._error(message=str(e), code=500)
+    @http.route(
+        "/api/auth/reset_password",
+        type="http",
+        auth="public",
+        methods=["POST"],
+        csrf=False,
+    )
+    @ApiKeyService.api_key_required()
+    def reset_password(self):
+        """Create a new user and return JWT token"""
+        try:
+            msg = AuthService().reset_user_password()
 
+            return self._success(msg)
+        except ValidationError as e:
+            return self._error(message=str(e), code=400)
+        except Exception as e:
+            return self._error(message=str(e), code=500)
 
-@http.route(
-    "/api/auth/reset_password",
-    type="http",
-    auth="public",
-    methods=["POST"],
-    csrf=False,
-)
-@ApiKeyService.api_key_required()
-def reset_password(self):
-    """Create a new user and return JWT token"""
-    try:
-        msg = AuthService().reset_user_password()
+    @http.route(
+        "/api/auth/otp_verity", type="http", auth="public", methods=["POST"], csrf=False
+    )
+    @ApiKeyService.api_key_required()
+    def verify_otp(self):
+        """Verify OTP code to change user password"""
+        try:
+            msg = AuthService().check_otp_password()
 
-        return self._success(msg)
-    except ValidationError as e:
-        return self._error(message=str(e), code=400)
-    except Exception as e:
-        return self._error(message=str(e), code=500)
+            return self._success(msg)
+        except ValidationError as e:
+            return self._error(message=str(e), code=400)
+        except Exception as e:
+            return self._error(message=str(e), code=500)
 
+    @http.route(
+        "/api/auth/logout", type="http", auth="public", methods=["POST"], csrf=False
+    )
+    @ApiKeyService.api_key_required()
+    @JWTService.jwt_required()
+    def logout(self):
+        """Logout endpoint"""
+        return self._success(message="Logout successful")
 
-@http.route(
-    "/api/auth/otp_verity", type="http", auth="public", methods=["POST"], csrf=False
-)
-@ApiKeyService.api_key_required()
-def verify_otp(self):
-    """Verify OTP code to change user password"""
-    try:
-        msg = AuthService().check_otp_password()
+    @http.route(
+        "/api/auth/refresh", type="http", auth="public", methods=["POST"], csrf=False
+    )
+    @ApiKeyService.api_key_required()
+    @JWTService.jwt_required(skip_expiry=True)
+    def refresh_token(self):
+        """Refresh JWT token"""
+        try:
+            user = request.authenticated_user
 
-        return self._success(msg)
-    except ValidationError as e:
-        return self._error(message=str(e), code=400)
-    except Exception as e:
-        return self._error(message=str(e), code=500)
+            token = JWTService.generate_token(user={"uid": user.id, "login": user.login})
+            data = AuthResponse(token=token)
+            return self._success(data)
 
+        except ValidationError as e:
+            return self._error(message=str(e), code=400)
 
-@http.route(
-    "/api/auth/logout", type="http", auth="public", methods=["POST"], csrf=False
-)
-@ApiKeyService.api_key_required()
-@JWTService.jwt_required()
-def logout(self):
-    """Logout endpoint"""
-    return self._success(message="Logout successful")
+    @http.route(
+        "/api/auth/change_password",
+        type="http",
+        auth="public",
+        methods=["POST"],
+        csrf=False,
+    )
+    @ApiKeyService.api_key_required()
+    @JWTService.jwt_required()
+    def change_password(self):
+        """Change user password"""
+        try:
+            AuthService().change_user_password()
+            return self._success(message="Password changed successfully.")
 
-
-@http.route(
-    "/api/auth/refresh", type="http", auth="public", methods=["POST"], csrf=False
-)
-@ApiKeyService.api_key_required()
-@JWTService.jwt_required(skip_expiry=True)
-def refresh_token(self):
-    """Refresh JWT token"""
-    try:
-        user = request.authenticated_user
-
-        token = JWTService.generate_token(user={"uid": user.id, "login": user.login})
-        data = AuthResponse(token=token)
-        return self._success(data)
-
-    except ValidationError as e:
-        return self._error(message=str(e), code=400)
-
-
-@http.route(
-    "/api/auth/change_password",
-    type="http",
-    auth="public",
-    methods=["POST"],
-    csrf=False,
-)
-@ApiKeyService.api_key_required()
-@JWTService.jwt_required()
-def change_password(self):
-    """Change user password"""
-    try:
-        AuthService().change_user_password()
-        return self._success(message="Password changed successfully.")
-
-    except AccessDenied as _:
-        return self._error(
-            message="The old password you provided is incorrect.", code=403
-        )
-    except ValidationError as e:
-        return self._error(message=str(e), code=400)
-    except Exception as e:
-        return self._error(message=f"An unexpected error occurred. {str(e)}", code=500)
+        except AccessDenied as _:
+            return self._error(
+                message="The old password you provided is incorrect.", code=403
+            )
+        except ValidationError as e:
+            return self._error(message=str(e), code=400)
+        except Exception as e:
+            return self._error(message=f"An unexpected error occurred. {str(e)}", code=500)
