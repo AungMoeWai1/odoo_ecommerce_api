@@ -14,7 +14,11 @@
     "depends": ["base", "web", "website_sale"],
     "external_dependencies": {"python": ["firebase_admin"]},
     # always loaded
-    "data": ["views/message_noti_views.xml", "security/ir.model.access.csv"],
+    "data": [
+        "views/message_noti_views.xml",
+        "security/ir.model.access.csv",
+        "views/res_config_settings_views.xml",
+    ],
     # only loaded in demonstration mode
     "installable": True,
     "application": False,

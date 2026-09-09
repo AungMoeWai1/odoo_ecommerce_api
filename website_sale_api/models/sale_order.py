@@ -47,7 +47,7 @@ class SaleOrder(models.Model):
     def write(self, vals):
         """Send noti when shipping status change"""
         shipping_status = vals.get("shipping_status_id")
-        if shipping_status and vals.get("state") == "sale":
+        if shipping_status and (vals.get("state") == "sale" or self.state == "sale"):
             message_notifications.send_message_notification(
                 self.partner_id.user_ids[:1],
                 self,

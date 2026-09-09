@@ -73,8 +73,10 @@ def _send_notifications_for_user(
 
 def send_message_notification(user, record, title, body):
     """Send notification(s) to the user's device token(s) using FirebaseConnector."""
-    log_id = create_notification_log(record, user.id, title, body)
-    return _send_notifications_for_user(user, title, body, log_id)
+    if user.company_id.enable_notification:
+        log_id = create_notification_log(record, user.id, title, body)
+        return _send_notifications_for_user(user, title, body, log_id)
+    return False
 
 
 def create_notification_log(record: models.Model, receiver_id, title: str, body: str):
