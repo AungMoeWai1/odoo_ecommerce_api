@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_message_notilog_list" model="ir.ui.view">
+        <field name="name">message.notification.log.list</field>
+        <field name="model">message.notification.log</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="receiver_id"/>
+                <field name="reference" widget="reference"/>
+                <field name="create_date"/>
+                <field name="status" widget="badge" decoration-success="status == 'success'"
+                       decoration-danger="status == 'fail'"/>
+                <field name="read_status" widget="badge" decoration-success="read_status == 'read'"
+                       decoration-info="read_status == 'unread'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_message_notilog_form" model="ir.ui.view">
+        <field name="name">message.notification.log.form</field>
+        <field name="model">message.notification.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="receiver_id" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                        <group name="col_right">
+                            <field name="read_status" readonly="1"/>
+                            <field name="reference" widget="reference"/>
+                        </group>
+                        <field name="title" readonly="1"/>
+                        <field name="body" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_message_noti_log" model="ir.actions.act_window">
+        <field name="name">Message Noti Log</field>
+        <field name="res_model">message.notification.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Message Noti Log
+            </p>
+            <p>
+                No message log started!
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+
+    <menuitem id="menu_notifiaction_log"
+              name="Notification Log"
+              parent="website_sale.menu_ecommerce"
+              groups="sales_team.group_sale_manager"
+              sequence="5">
+
+        <menuitem id="menu_message_noti_log"
+                  name="Message Notification Log"
+                  action="action_message_noti_log"/>
+
+    </menuitem>
+
+</odoo>

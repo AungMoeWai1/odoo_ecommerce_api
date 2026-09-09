@@ -10,6 +10,7 @@ from . import (
     checkout_service,
     delivery_method_service,
     invoice_service,
+    noti_message_service,
     order_service,
     pagination_service,
     payment_method_service,

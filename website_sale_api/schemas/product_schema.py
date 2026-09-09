@@ -39,6 +39,7 @@ class ProductVariantData(BaseProductData):
 class ProductData(BaseProductData):
     """Schema for individual product data"""
 
+    website_ribbon_id: Optional[int] = None
     images: Optional[str] = None
 
 

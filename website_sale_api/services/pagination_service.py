@@ -3,8 +3,6 @@
 # pylint:disable=import-error
 from typing import Any, Dict, Optional
 
-from odoo.addons.web.controllers import domain
-from odoo.tools.date_utils import date_range
 from .base_service import BaseService
 
 
@@ -18,10 +16,10 @@ class PaginationService(BaseService):
         self.default_sort = "id"
 
     def get_paginated_records(
-            self,
-            sort: Optional[str] = None,
-            page: int = 1,
-            size: int = 10,
+        self,
+        sort: Optional[str] = None,
+        page: int = 1,
+        size: int = 10,
     ) -> Dict[str, Any]:
         """
         Retrieve paginated records.
@@ -65,30 +63,30 @@ class PaginationService(BaseService):
         sort = str(kwargs.pop("sort", "id desc"))
 
         # Build domain from range filter and remaining kwargs
-        domain = self._range_filter(
-            kwargs.pop('filter_field', 'create_date'),
-            kwargs.pop('filter_from', None),
-            kwargs.pop('filter_to', None)
+        filter_domain = self._range_filter(
+            kwargs.pop("filter_field", "create_date"),
+            kwargs.pop("filter_from", None),
+            kwargs.pop("filter_to", None),
         )
-        domain += self._build_domain_from_kwargs(kwargs)
+        filter_domain += self._build_domain_from_kwargs(kwargs)
 
-        self.default_domain += domain
+        self.default_domain += filter_domain
         return self.get_paginated_records(sort=sort, page=page, size=size)
 
     def _range_filter(self, field: str, from_val: Any, to_val: Any) -> list:
         """Build domain for range filtering."""
-        domain = []
+        range_domain = []
         if from_val:
-            domain.append((field, ">=", from_val))
+            range_domain.append((field, ">=", from_val))
         if to_val:
-            domain.append((field, "<=", to_val))
-        return domain
+            range_domain.append((field, "<=", to_val))
+        return range_domain
 
     def _build_domain_from_kwargs(self, kwargs: Dict[str, Any]) -> list:
         """Build Odoo domain from remaining kwargs dynamically."""
         domain = []
         for key, value in kwargs.items():
-            if value is None or value == '':
+            if value is None or value == "":
                 continue
-            domain.append((key, 'ilike' if isinstance(value, str) else '=', value))
+            domain.append((key, "ilike" if isinstance(value, str) else "=", value))
         return domain

@@ -32,6 +32,7 @@ class ProductService(PaginationService):
             "rating_count",
             "product_template_image_ids",
             "allow_out_of_stock_order",
+            "website_ribbon_id",
             "uom_id",
         ]
         self.website = self._get_current_website()
@@ -70,6 +71,11 @@ class ProductService(PaginationService):
             currency=self.website.currency_id.name,
             currency_id=self.website.currency_id.id,
             category_id=product.get("public_categ_ids"),
+            website_ribbon_id=(
+                product["website_ribbon_id"][0]
+                if product["website_ribbon_id"]
+                else None
+            ),
             rating=product.get("rating_avg", 0.0),
             review_count=product.get("rating_count", 0),
             images=self._get_image_url(self.model_name, product["id"]),

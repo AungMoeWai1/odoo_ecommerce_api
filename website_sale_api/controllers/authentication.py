@@ -122,7 +122,9 @@ class AuthController(BaseAPI):
         try:
             user = request.authenticated_user
 
-            token = JWTService.generate_token(user={"uid": user.id, "login": user.login})
+            token = JWTService.generate_token(
+                user={"uid": user.id, "login": user.login}
+            )
             data = AuthResponse(token=token)
             return self._success(data)
 
@@ -151,4 +153,6 @@ class AuthController(BaseAPI):
         except ValidationError as e:
             return self._error(message=str(e), code=400)
         except Exception as e:
-            return self._error(message=f"An unexpected error occurred. {str(e)}", code=500)
+            return self._error(
+                message=f"An unexpected error occurred. {str(e)}", code=500
+            )

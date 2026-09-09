@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>employee authentication</title>
+
+        <!-- Essential Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+        <!-- Google Font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+
+    <body>
+        <!-- overview -->
+        <!-- Overview Section -->
+        <div class="container my-5">
+            <!-- Badges Section -->
+            <div class="d-flex justify-content-end align-items-center flex-wrap gap-3">
+                <span
+                    style="
+                        background-color: #28a745;
+                        color: #fff;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                        padding: 5px 18px;
+                        border-radius: 30px;
+                    "
+                >
+                    ✅ Community
+                </span>
+                <span
+                    style="
+                        background-color: #661d93;
+                        color: #fff;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                        padding: 5px 18px;
+                        border-radius: 30px;
+                    "
+                >
+                    💼 Enterprise
+                </span>
+                <span
+                    style="
+                        background-color: #3f3f93;
+                        color: #fff;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                        padding: 5px 18px;
+                        border-radius: 30px;
+                    "
+                >
+                    ☁️ Odoo.sh
+                </span>
+            </div>
+
+            <!-- Main Hero Section -->
+            <div
+                style="
+                    background: linear-gradient(135deg, #f9f9ff, #ffffff);
+                    padding: 60px 30px;
+                    border-radius: 16px;
+                    text-align: center;
+                    box-shadow: 0px 12px 30px rgba(127, 84, 179, 0.15);
+                "
+                class="mt-4"
+            >
+                <h1 style="font-size: 48px; font-weight: 800; color: #222">
+                    Firebase Notification For Ecommerce order
+                </h1>
+                <p style="font-size: 18px; font-weight: 500; color: #555" class="mb-5">
+                    This module sends Firebase Cloud Messaging notifications from Odoo ecommerce workflows to registered
+                    mobile devices.
+                </p>
+
+                <div
+                    class="d-flex flex-column flex-lg-row justify-content-center align-items-center mt-5"
+                    style="gap: 40px"
+                >
+                    <div class="text-center">
+                        <img
+                            src="./assets/SME Intellect Co., Ltd..png"
+                            alt="SME Intellect"
+                            style="max-width: 250px; border-radius: 12px"
+                        />
+                    </div>
+                    <div class="d-none d-lg-block" style="width: 2px; height: 120px; background-color: #ccc"></div>
+                    <div class="text-center">
+                        <img src="./assets/odoo.png" alt="Odoo" style="max-width: 250px; border-radius: 12px" />
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="mt-5">
+                    <a
+                        href="mailto:info@smeintellect.com"
+                        style="
+                            font-size: 16px;
+                            font-weight: 600;
+                            padding: 12px 40px;
+                            border-radius: 30px;
+                            border: none;
+                            background: linear-gradient(90deg, #7f54b3, #875a7b);
+                            color: #fff;
+                            text-decoration: none;
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: transform 0.2s ease, box-shadow 0.2s ease;
+                        "
+                        onmouseover="this.style.transform='scale(1.07)'; this.style.boxShadow='0px 8px 24px rgba(127, 84, 179, .3)'"
+                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'"
+                    >
+                        <img src="./assets/icons/banner-mail.svg" alt="Email" style="width: 20px" />
+                        <span class="ms-2">Email Us</span>
+                    </a>
+                </div>
+
+                <!-- key-highlight -->
+                <div
+                    class=""
+                    style="border-radius: 16px; padding: 60px 40px; background: transparent; margin-top: 10px"
+                >
+                    <div class="row">
+                        <div class="col-lg-12 d-flex flex-column justify-content-center align-items-center">
+                            <h2
+                                style="
+                                    color: #121212;
+                                    text-align: center;
+                                    font-size: 40px;
+                                    font-weight: 700;
+                                    text-transform: uppercase;
+                                    padding-bottom: 50px;
+                                "
+                            >
+                                KEY HIGHLIGHTS
+                            </h2>
+                        </div>
+
+                        <!--                Simple highlight part-->
+                        <div class="row">
+                            <!-- Unique Employee ID -->
+                            <div class="col-lg-4 d-flex">
+                                <div
+                                    class="mb-4 d-flex flex-column justify-content-between gap-3 h-100 w-100"
+                                    style="
+                                        border-radius: 12px;
+                                        border: 1px solid #b6bccd;
+                                        background: #fff;
+                                        padding: 32px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex align-items-center"
+                                        style="border-radius: 8px !important; height: 70px"
+                                    >
+                                        <img
+                                            src="./assets/feature_icons/approve_reject.png"
+                                            class="img-responsive"
+                                            height="40px"
+                                            width="40px"
+                                        />
+                                        <h5 class="m-0 px-3" style="color: #000 !important; font-weight: bold">
+                                            Order and Invoice Alerts
+                                        </h5>
+                                    </div>
+                                    <p
+                                        class="m-0"
+                                        style="font-size: 16px; text-align: left; font-weight: 400; color: #000"
+                                    >
+                                        Customers receive clear notifications when ecommerce orders are confirmed or
+                                        their delivery status changes.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Secure Password Handling -->
+                            <div class="col-lg-4 d-flex">
+                                <div
+                                    class="mb-4 d-flex flex-column justify-content-between gap-3 h-100 w-100"
+                                    style="
+                                        border-radius: 12px;
+                                        border: 1px solid #b6bccd;
+                                        background: #fff;
+                                        padding: 32px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex align-items-center"
+                                        style="border-radius: 8px !important; height: 70px"
+                                    >
+                                        <img
+                                            src="./assets/feature_icons/pending.png"
+                                            class="img-responsive"
+                                            height="40px"
+                                            width="40px"
+                                        />
+                                        <h5 class="m-0 px-3" style="color: #000 !important; font-weight: bold">
+                                            User Message Notifications
+                                        </h5>
+                                    </div>
+                                    <p
+                                        class="m-0"
+                                        style="font-size: 16px; text-align: left; font-weight: 400; color: #000"
+                                    >
+                                        Notifications are sent to the Odoo user connected to the customer partner
+                                        record.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Authentication Tab -->
+                            <div class="col-lg-4 d-flex">
+                                <div
+                                    class="mb-4 d-flex flex-column justify-content-between gap-3 h-100 w-100"
+                                    style="
+                                        border-radius: 12px;
+                                        border: 1px solid #b6bccd;
+                                        background: #fff;
+                                        padding: 32px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex align-items-center"
+                                        style="border-radius: 8px !important; height: 70px"
+                                    >
+                                        <img
+                                            src="./assets/feature_icons/real_time.png"
+                                            class="img-responsive"
+                                            height="40px"
+                                            width="40px"
+                                        />
+                                        <h5 class="m-0 px-3" style="color: #000 !important; font-weight: bold">
+                                            Notification Log Sync
+                                        </h5>
+                                    </div>
+                                    <p
+                                        class="m-0"
+                                        style="font-size: 16px; text-align: left; font-weight: 400; color: #000"
+                                    >
+                                        Notifications are triggered from Odoo order and invoice actions and logged for
+                                        later review.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-5">
+                            <!-- Unique Employee ID -->
+                            <div class="col-lg-4 d-flex">
+                                <div
+                                    class="mb-4 d-flex flex-column justify-content-between gap-3 h-100 w-100"
+                                    style="
+                                        border-radius: 12px;
+                                        border: 1px solid #b6bccd;
+                                        background: #fff;
+                                        padding: 32px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex align-items-center"
+                                        style="border-radius: 8px !important; height: 70px"
+                                    >
+                                        <img
+                                            src="./assets/feature_icons/secure_registeration.png"
+                                            class="img-responsive"
+                                            height="40px"
+                                            width="50px"
+                                        />
+                                        <h5 class="m-0 px-3" style="color: #000 !important; font-weight: bold">
+                                            Secure Device Registration
+                                        </h5>
+                                    </div>
+                                    <p
+                                        class="m-0"
+                                        style="font-size: 16px; text-align: left; font-weight: 400; color: #000"
+                                    >
+                                        Mobile device token are securely stored and send messages to authorized user
+                                        devices.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Secure Password Handling -->
+                            <div class="col-lg-4 d-flex">
+                                <div
+                                    class="mb-4 d-flex flex-column justify-content-between gap-3 h-100 w-100"
+                                    style="
+                                        border-radius: 12px;
+                                        border: 1px solid #b6bccd;
+                                        background: #fff;
+                                        padding: 32px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex align-items-center"
+                                        style="border-radius: 8px !important; height: 70px"
+                                    >
+                                        <img
+                                            src="./assets/feature_icons/multi_requests.png"
+                                            class="img-responsive"
+                                            height="40px"
+                                            width="50px"
+                                        />
+                                        <h5 class="m-0 px-3" style="color: #000 !important; font-weight: bold">
+                                            Message View Support
+                                        </h5>
+                                    </div>
+                                    <p
+                                        class="m-0"
+                                        style="font-size: 16px; text-align: left; font-weight: 400; color: #000"
+                                    >
+                                        The notification helper can be called from any installed Odoo addon that depends
+                                        on this module.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Authentication Tab -->
+                            <div class="col-lg-4 d-flex">
+                                <div
+                                    class="mb-4 d-flex flex-column justify-content-between gap-3 h-100 w-100"
+                                    style="
+                                        border-radius: 12px;
+                                        border: 1px solid #b6bccd;
+                                        background: #fff;
+                                        padding: 32px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex align-items-center"
+                                        style="border-radius: 8px !important; height: 70px"
+                                    >
+                                        <img
+                                            src="./assets/feature_icons/firebase.png"
+                                            class="img-responsive"
+                                            height="40px"
+                                            width="50px"
+                                        />
+                                        <h5 class="m-0 px-3" style="color: #000 !important; font-weight: bold">
+                                            Firebase Push Notifications
+                                        </h5>
+                                    </div>
+                                    <p
+                                        class="m-0"
+                                        style="font-size: 16px; text-align: left; font-weight: 400; color: #000"
+                                    >
+                                        Instant push notifications are delivered through Firebase Cloud Messaging when a
+                                        valid device token is available.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- configuration and usage -->
+                <section
+                    class="mt-5 text-start"
+                    style="
+                        border-radius: 16px;
+                        border: 1px solid #ebeef2;
+                        background: #fff;
+                        padding: 50px 40px;
+                        box-shadow: 0px 5px 20px -11px rgba(0, 0, 0, 0.25);
+                    "
+                >
+                    <h2
+                        style="
+                            color: #121212;
+                            font-size: 36px;
+                            font-weight: 700;
+                            text-align: center;
+                            margin-bottom: 35px;
+                        "
+                    >
+                        Configuration and Usage
+                    </h2>
+
+                    <h4 style="color: #121212; font-weight: 700">1. Configure Firebase</h4>
+                    <p style="font-size: 16px; line-height: 150%; color: #555">
+                        Generate a Firebase Admin SDK private key from
+                        <strong>Firebase Console &gt; Project settings &gt; Service accounts</strong>. Rename the
+                        downloaded file to <strong>hr_intellect.json</strong> and place it in:
+                    </p>
+                    <pre
+                        style="
+                            background: #f6f7f9;
+                            color: #000;
+                            border-radius: 8px;
+                            padding: 18px;
+                            white-space: pre-wrap;
+                        "
+                    ><code>firebase_sync_log/key/hr_intellect.json</code></pre>
+                    <p style="font-size: 16px; line-height: 150%; color: #555">
+                        Keep this service-account file private. Do not commit it to Git or expose it through a web
+                        server.
+                    </p>
+
+                    <h4 style="color: #121212; font-weight: 700; margin-top: 30px">2. Install the dependency</h4>
+                    <pre
+                        style="
+                            background: #f6f7f9;
+                            color: #000;
+                            border-radius: 8px;
+                            padding: 18px;
+                            white-space: pre-wrap;
+                        "
+                    ><code>pip install firebase-admin</code></pre>
+
+                    <h4 style="color: #121212; font-weight: 700; margin-top: 30px">3. Register the device token</h4>
+                    <p style="font-size: 16px; line-height: 150%; color: #555">
+                        Store the mobile FCM token on the recipient Odoo user using
+                        <strong>mobile_device_token</strong>. Multiple tokens can be stored in
+                        <strong>mobile_device_tokens</strong> when each related record has a
+                        <strong>token</strong> field.
+                    </p>
+
+                    <h4 style="color: #121212; font-weight: 700; margin-top: 30px">
+                        4. Send a notification from another addon
+                    </h4>
+                    <p style="font-size: 16px; line-height: 150%; color: #555">
+                        Import the helper and call it from an Odoo model method after the relevant business action:
+                    </p>
+                    <pre
+                        style="
+                            background: #f6f7f9;
+                            color: #000;
+                            border-radius: 8px;
+                            padding: 18px;
+                            white-space: pre-wrap;
+                        "
+                    ><code>from odoo.addons.firebase_sync_log.models import message_notifications
+
+                        message_notifications.send_message_notification(
+                            self.partner_id.user_ids[:1],
+                            self,
+                            "Sale order has been confirmed",
+                            f"Your order {self.name} has been confirmed!",
+                        )</code></pre>
+                    <p style="font-size: 16px; line-height: 150%; color: #555">
+                        The helper returns <strong>True</strong> when at least one notification is sent successfully. It
+                        returns <strong>False</strong> when the user has no device token or Firebase cannot send the
+                        message.
+                    </p>
+                </section>
+
+                <section
+                    id="services"
+                    class="mt-5"
+                    style="
+                        border-radius: 16px;
+                        border: 1px solid #ebeef2;
+                        background: var(--Neutral-N0, #fff);
+                        padding: 60px 40px;
+                        box-shadow: 0px 5px 20px -11px rgba(0, 0, 0, 0.25);
+                    "
+                >
+                    <div class="text-center mt-4">
+                        <h3
+                            class="mb-0"
+                            style="
+                                color: #000;
+                                text-align: center;
+                                font-family: Montserrat;
+                                font-size: 40px;
+                                font-style: normal;
+                                font-weight: 700;
+                                line-height: normal;
+                                text-transform: uppercase;
+                                padding-bottom: 50px;
+                            "
+                        >
+                            Our Services
+                        </h3>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <a href="#" style="text-decoration: none">
+                                <div
+                                    class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                    style="
+                                        font-size: 25px;
+                                        font-weight: bold;
+                                        background-color: #ffe2e5;
+                                        margin: auto;
+                                        gap: 16px;
+                                        border-radius: 8px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex justify-content-center align-items-center"
+                                        style="background-color: #fa5a7d; border-radius: 50%; height: 56px; width: 56px"
+                                    >
+                                        <img
+                                            src="./assets/icons/gear.svg"
+                                            class="img-responsive"
+                                            height="28px"
+                                            width="28px"
+                                        />
+                                    </div>
+                                    <span style="font-size: 18px; color: var(--text-color); font-weight: 600">
+                                        Odoo Customization</span
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <a href="#" style="text-decoration: none">
+                                <div
+                                    class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                    style="
+                                        font-size: 25px;
+                                        font-weight: bold;
+                                        background-color: #fff4de;
+                                        margin: auto;
+                                        gap: 16px;
+                                        border-radius: 8px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex justify-content-center align-items-center"
+                                        style="background-color: #ff947a; border-radius: 50%; height: 56px; width: 56px"
+                                    >
+                                        <img
+                                            src="./assets/icons/wrench-icon.svg"
+                                            class="img-responsive"
+                                            height="28px"
+                                            width="28px"
+                                        />
+                                    </div>
+                                    <span style="font-size: 18px; color: var(--text-color); font-weight: 600">
+                                        Odoo Implementation</span
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <a href="#" style="text-decoration: none">
+                                <div
+                                    class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                    style="
+                                        font-size: 25px;
+                                        font-weight: bold;
+                                        background-color: #dcfce7;
+                                        margin: auto;
+                                        gap: 16px;
+                                        border-radius: 8px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex justify-content-center align-items-center"
+                                        style="background-color: #3cd856; border-radius: 50%; height: 56px; width: 56px"
+                                    >
+                                        <img
+                                            src="./assets/icons/life-ring-icon.svg"
+                                            class="img-responsive"
+                                            height="28px"
+                                            width="28px"
+                                        />
+                                    </div>
+                                    <span style="font-size: 18px; color: var(--text-color); font-weight: 600"
+                                        >Odoo Support</span
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <a href="#" style="text-decoration: none">
+                                <div
+                                    class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                    style="
+                                        font-size: 25px;
+                                        font-weight: bold;
+                                        background-color: #f3e8ff;
+                                        margin: auto;
+                                        gap: 16px;
+                                        border-radius: 8px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex justify-content-center align-items-center"
+                                        style="background-color: #bf83ff; border-radius: 50%; height: 56px; width: 56px"
+                                    >
+                                        <img
+                                            src="./assets/icons/arrows-repeat.svg"
+                                            class="img-responsive"
+                                            height="28px"
+                                            width="28px"
+                                        />
+                                    </div>
+                                    <span style="font-size: 18px; color: var(--text-color); font-weight: 600"
+                                        >Odoo Migration</span
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <a href="#" style="text-decoration: none">
+                                <div
+                                    class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                    style="
+                                        font-size: 25px;
+                                        font-weight: bold;
+                                        background-color: #f1f9ff;
+                                        margin: auto;
+                                        gap: 16px;
+                                        border-radius: 8px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex justify-content-center align-items-center"
+                                        style="background-color: #01649c; border-radius: 50%; height: 56px; width: 56px"
+                                    >
+                                        <img
+                                            src="./assets/icons/puzzle-piece-icon.svg"
+                                            class="img-responsive"
+                                            height="28px"
+                                            width="28px"
+                                        />
+                                    </div>
+                                    <span style="font-size: 18px; color: var(--text-color); font-weight: 600"
+                                        >Odoo integration</span
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <a href="#" style="text-decoration: none">
+                                <div
+                                    class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                    style="
+                                        font-size: 25px;
+                                        font-weight: bold;
+                                        background-color: #edf8ed;
+                                        margin: auto;
+                                        gap: 16px;
+                                        border-radius: 8px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex justify-content-center align-items-center"
+                                        style="background-color: #69cc70; border-radius: 50%; height: 56px; width: 56px"
+                                    >
+                                        <img
+                                            src="./assets/icons/odoo-consultancy.svg"
+                                            class="img-responsive"
+                                            height="28px"
+                                            width="28px"
+                                        />
+                                    </div>
+                                    <span style="font-size: 18px; color: var(--text-color); font-weight: 600"
+                                        >Odoo Consultancy</span
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <a href="#" style="text-decoration: none">
+                                <div
+                                    class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                    style="
+                                        font-size: 25px;
+                                        font-weight: bold;
+                                        background-color: #f1f6ff;
+                                        margin: auto;
+                                        gap: 16px;
+                                        border-radius: 8px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex justify-content-center align-items-center"
+                                        style="background-color: #2e4556; border-radius: 50%; height: 56px; width: 56px"
+                                    >
+                                        <img
+                                            src="./assets/icons/odoo-licencing.svg"
+                                            class="img-responsive"
+                                            height="28px"
+                                            width="28px"
+                                        />
+                                    </div>
+                                    <span style="font-size: 18px; color: var(--text-color); font-weight: 600"
+                                        >Odoo Licensing</span
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <a href="#" style="text-decoration: none">
+                                <div
+                                    class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                    style="
+                                        font-size: 25px;
+                                        font-weight: bold;
+                                        background-color: #faf6ea;
+                                        margin: auto;
+                                        gap: 16px;
+                                        border-radius: 8px;
+                                    "
+                                >
+                                    <div
+                                        class="d-flex justify-content-center align-items-center"
+                                        style="background-color: #fcd12c; border-radius: 50%; height: 56px; width: 56px"
+                                    >
+                                        <img
+                                            src="./assets/icons/hire-odoo.svg"
+                                            class="img-responsive"
+                                            height="28px"
+                                            width="28px"
+                                        />
+                                    </div>
+                                    <span style="font-size: 18px; color: var(--text-color); font-weight: 600"
+                                        >Hire Odoo Developer</span
+                                    >
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </body>
+</html>

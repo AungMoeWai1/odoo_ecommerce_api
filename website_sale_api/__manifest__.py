@@ -13,6 +13,7 @@
         "stock",
         "website_sale_collect",
         "website_sale_wishlist",
+        "firebase_sync_log",
     ],
     "data": [
         "data/otpcode_template_data.xml",

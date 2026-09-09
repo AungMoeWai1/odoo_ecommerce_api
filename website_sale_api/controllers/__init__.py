@@ -10,6 +10,7 @@ from . import (
     checkout,
     delivery_method,
     invoice,
+    message_notification,
     order,
     payment_method,
     portal,

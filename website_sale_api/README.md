@@ -154,10 +154,8 @@ Auth: API key + JWT.
 }
 ```
 
-#### PUT `/api/auth/profile`
-Auth: API key + JWT.
-**Body (any subset of):** `name`, `login`/`email`, `phone`, `street`, `city`, `country_id`, `company_id`, `company_name`
-**Response 200:** `{ "status": "success", "id": 1, "message": "User profile updated successfully" }`
+Profile fields are currently read-only through this API. There is no
+`PUT /api/auth/profile` route in the current implementation.
 
 #### PUT `/api/auth/profile/image`
 Auth: API key + JWT.
@@ -516,20 +514,48 @@ All require API key + JWT. Returns customer invoices (`move_type = "out_invoice"
 
 ---
 
-### 4.15 Customer Portal (native Odoo, extended) — `/my/address/*`
+### 4.15 Notifications — `/api/noti_messages*`
 
-These extend Odoo's built-in portal controller and use Odoo's session/website auth (**not** the API key / JWT scheme above), transported as `type="jsonrpc"`.
+All notification endpoints require API key + JWT and return notifications
+belonging to the authenticated user.
 
-#### POST `/my/address/townships`
-Auth: `auth="user"` (logged-in portal/website session required).
-**Body (JSON-RPC params):** `{ "state_id": 1 }`
-**Response:** array of `{ "id": ..., "name": ..., "price": ... }` for townships in that state.
+#### GET `/api/noti_messages`
+Returns notification records created by the Firebase notification helper.
+**Query params:** `page` (default `1`), `size` (default `10`)
+**Response 200:**
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 12,
+      "name": "Notification",
+      "receiver_id": 3,
+      "receiver_name": "John Doe",
+      "read_status": "unread",
+      "status": "success",
+      "create_date": "2026-01-01 10:00:00",
+      "title": "Sale order has been confirmed",
+      "body": "Your order S00021 has been confirmed!"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "size": 10,
+  "total_pages": 1,
+  "has_next": false,
+  "has_prev": false
+}
+```
 
-#### POST `/my/address/state_info/{state_id}`
-Auth: `auth="public"`. `state_id` is resolved to a `res.country.state` record by Odoo's URL converter.
-**Response:** `{ "townships": [[id, name], ...] }`
-
-> This controller also silently augments the standard Odoo portal address form (`_prepare_address_form_values`) to include `township_id` and `state_townships`, used by the website's own checkout pages rather than by external API consumers.
+#### PUT `/api/noti_messages/bulk`
+Marks the specified notification IDs as read.
+**Body:** `{ "ids": [12, 13] }`
+**Response 200:**
+```json
+{ "status": "success", "ids": [12, 13], "message": "Successfully marked as read" }
+```
+**Response 400:** `{ "status": "fail", "message": "Failed to update notification status" }`
 
 ---
 
@@ -546,7 +572,6 @@ Auth: `auth="public"`. `state_id` is resolved to a `res.country.state` record by
 | POST | `/api/auth/refresh` | API key + JWT (expired OK) |
 | POST | `/api/auth/change_password` | API key + JWT              |
 | GET | `/api/auth/profile` | API key + JWT              |
-| PUT | `/api/auth/profile` | API key + JWT              |
 | PUT | `/api/auth/profile/image` | API key + JWT              |
 | GET | `/api/countries/{cid}/states` | API key + JWT              |
 | GET | `/api/countries/{cid}/townships` | API key + JWT              |
@@ -573,29 +598,30 @@ Auth: `auth="public"`. `state_id` is resolved to a `res.country.state` record by
 | GET | `/api/delivery_methods` | API key + JWT              |
 | POST | `/api/delivery_methods` | API key + JWT              |
 | GET | `/api/payment_methods` | API key + JWT              |
-| POST | `/api/checkout` | JWT only + JWT             |
+| POST | `/api/checkout` | API key + JWT              |
 | GET | `/api/orders` | API key + JWT              |
 | GET | `/api/orders/{order_id}` | API key + JWT              |
 | GET | `/api/invoices` | API key + JWT              |
 | GET | `/api/invoices/{invoice_id}` | API key + JWT              |
+| GET | `/api/noti_messages` | API key + JWT              |
+| PUT | `/api/noti_messages/bulk` | API key + JWT              |
 
 
 ---
 
 ## 6. Suggested Client Flow (Guest → Purchase)
 
-1. `POST /api/auth/register` or `/api/auth/login` or `/api/auth/logout ` → get JWT and logout.
-2. `POST /api/auth/reset_password` or  `/api/auth/change_passwrod` → Manage password.
-2. `GET /api/categories`, `GET /api/products` → browse catalog.
-3. `GET /api/products/{id}` → view variants/details.
-4. `POST /api/wishlists` (optional) →  react by login user.
-5. `POST /api/product/{id}/reviews (optional)` → view all of rating. Edit own rating.
-5. `POST /api/cart` → add variant(s) to cart; `GET /api/cart` to review.
-6. `GET /api/my/address` / `POST /api/my/address` → ensure a shipping address exists.
-7. `PUT /api/order/address` → attach chosen address to the cart.
-8. `GET /api/delivery_methods` → list carriers; `POST /api/delivery_methods` → select one.
-9. `GET /api/payment_methods` → list payment options.
-10. `POST /api/checkout` → create transaction, validate, confirm order.
-11. `GET /api/orders` / `GET /api/orders/{id}` and `GET /api/invoices` → post-purchase tracking.
+1. `POST /api/auth/register` or `/api/auth/login` → obtain a JWT.
+2. `POST /api/auth/reset_password` or `/api/auth/change_password` → manage the password.
+3. `GET /api/categories` and `GET /api/products` → browse the catalog.
+4. `GET /api/products/{id}` → view product variants and details.
+5. `POST /api/wishlists` and `POST /api/product/{id}/reviews` (optional) → save or review products.
+6. `POST /api/cart` → add variants to the cart; `GET /api/cart` → review it.
+7. `GET /api/my/address` / `POST /api/my/address` → ensure a shipping address exists.
+8. `PUT /api/order/address` → attach the selected address to the cart.
+9. `GET /api/delivery_methods` → list carriers; `POST /api/delivery_methods` → select one.
+10. `GET /api/payment_methods` → list payment options.
+11. `POST /api/checkout` → create the transaction, validate, and confirm the order.
+12. `GET /api/orders`, `GET /api/invoices`, and `GET /api/noti_messages` → track post-purchase activity.
 
 ---

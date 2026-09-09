@@ -8,6 +8,7 @@ from . import (
     category_schema,
     delivery_method_schema,
     invoice_schema,
+    noti_message_schema,
     order_schema,
     pagination,
     payment_methods_schema,
