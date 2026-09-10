@@ -16,6 +16,7 @@ from . import (
     portal,
     product,
     profile,
+    promotion,
     reviews,
     ribbon,
     wishlist,

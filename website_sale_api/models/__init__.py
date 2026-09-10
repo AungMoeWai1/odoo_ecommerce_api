@@ -14,4 +14,5 @@ from . import (
     res_users,
     sale_order,
     shipping_status,
+    website_promotion_popup,
 )

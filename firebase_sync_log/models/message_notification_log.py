@@ -1,6 +1,6 @@
 """Notification Log Module"""
 
-# pylint:disable=import-error,too-few-public-methods
+# pylint:disable=import-error,too-few-public-methods,protected-access
 from odoo import api, fields, models
 
 
@@ -17,7 +17,7 @@ class MessageNotificationLog(models.Model):
 
     receiver_id = fields.Many2one("res.users", string="Receiver", ondelete="cascade")
 
-    model_name = fields.Char(string="Model", required=True)
+    model_name = fields.Char(string="Model")
     record_id = fields.Many2oneReference(
         model_field="model_name",
         help="Reference to the record in the model",
@@ -55,4 +55,11 @@ class MessageNotificationLog(models.Model):
     def _compute_name(self):
         """Compute name field."""
         for record in self:
-            record.name = self.env[record.model_name].browse(record.record_id).name
+            name = self.env[record.model_name].browse(record.record_id).name
+            record.name = name if name else "Publish Message"
+
+    def action_send_message(self):
+        """Show message wizard"""
+        return self.env["ir.actions.actions"]._for_xml_id(
+            "firebase_sync_log.noti_message_wizard_action"
+        )

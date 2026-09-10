@@ -6,6 +6,10 @@
         <field name="model">message.notification.log</field>
         <field name="arch" type="xml">
             <list>
+                <header>
+                    <button name="action_send_message" string="Send Custom Message" type="object"
+                            display="always" class="btn-primary"/>
+                </header>
                 <field name="name"/>
                 <field name="receiver_id"/>
                 <field name="reference" widget="reference"/>
@@ -70,6 +74,7 @@
 
         <menuitem id="menu_message_noti_log"
                   name="Message Notification Log"
+                  sequence="1"
                   action="action_message_noti_log"/>
 
     </menuitem>

@@ -30,7 +30,7 @@ firebase_sync_log/key/hr_intellect.json
 
 The connector reads this default file automatically. The path is resolved from
 the addon directory, so it also works when the addon is installed in a custom
-Odoo addons path.
+Odoo addons path.	
 
 ### Service-account key security
 

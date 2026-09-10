@@ -14,6 +14,7 @@ from . import (
     payment_methods_schema,
     product_schema,
     profile_schema,
+    promotion_schema,
     review_schema,
     ribbon_schema,
 )

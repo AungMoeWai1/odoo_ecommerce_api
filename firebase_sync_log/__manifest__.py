@@ -15,6 +15,7 @@
     "external_dependencies": {"python": ["firebase_admin"]},
     # always loaded
     "data": [
+        "wizard/notification_message_wizard_view.xml",
         "views/message_noti_views.xml",
         "security/ir.model.access.csv",
         "views/res_config_settings_views.xml",

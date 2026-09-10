@@ -17,6 +17,7 @@ from . import (
     product_service,
     product_variant_service,
     profile_service,
+    promotion_service,
     review_service,
     ribbon_service,
     token_service,
