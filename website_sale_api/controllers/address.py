@@ -25,9 +25,9 @@ class AddressAPI(BaseAPI):
     )
     @ApiKeyService.api_key_required()
     @JWTService.jwt_required()
-    def get_state(self, cid):
+    def get_states(self, cid):
         """Get the state of the authenticated user"""
-        return self._success(ShippingAddressService().get_state(country_id=cid))
+        return self._success(ShippingAddressService().get_country_state(country_id=cid))
 
     @http.route(
         "/api/countries/<int:cid>/townships",

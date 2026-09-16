@@ -23,7 +23,7 @@ class ShippingAddressService(BaseService):
         self.model_name = "res.partner"
         self.website = self._get_current_website()
 
-    def get_state(self, country_id):
+    def get_country_state(self, country_id):
         """Get state for a country"""
         states = request.env["res.country.state"].search(
             [("country_id", "=", country_id)]
