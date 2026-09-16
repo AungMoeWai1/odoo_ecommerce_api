@@ -45,7 +45,7 @@ class ProfileService(BaseService):
             country = self.env["res.country"].search([("code", "=", "MM")], limit=1)
 
             if country:
-                user.write({"country_id": country.id})
+                user.sudo().write({"country_id": country.id})
         except Exception as e:
             raise ValidationError(f"Modify user country fail: {str(e)}") from e
 

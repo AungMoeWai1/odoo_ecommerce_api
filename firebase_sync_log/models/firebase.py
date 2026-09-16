@@ -8,8 +8,8 @@ from pathlib import Path
 import firebase_admin
 from firebase_admin import credentials, firestore, get_app, initialize_app, messaging
 
-DEFAULT_FILE_NAME = "hr_intellect.json"
-DEFAULT_DIR = "firebase_sync_mixin/key"
+DEFAULT_FILE_NAME = "ecommerce_key.json"
+DEFAULT_DIR = "firebase_sync_log/key"
 
 _logger = logging.getLogger(__name__)
 

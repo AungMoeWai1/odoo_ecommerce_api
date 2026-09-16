@@ -2,6 +2,7 @@
 registration, profile retrieval, and password management."""
 
 # pylint:disable=too-few-public-methods,import-error,broad-exception-caught,protected-access
+import json
 from odoo import http
 from odoo.exceptions import AccessDenied, ValidationError
 from odoo.http import request
@@ -30,6 +31,25 @@ class AuthController(BaseAPI):
 
         token = JWTService.generate_token(user=user)
         return self._success(AuthResponse(token=token))
+
+    @http.route(
+        "/api/auth/device_token",
+        type="http",
+        auth="public",
+        methods=["POST"],
+        csrf=False,
+    )
+    @ApiKeyService.api_key_required()
+    @JWTService.jwt_required()
+    def update_device_token(self):
+        """Authenticate user and return JWT token"""
+        user = request.authenticated_user
+        data = json.loads(request.httprequest.data)
+        try:
+            AuthService().update_mobile_token(data, user.id)
+            return self._success(message="Mobile token updated successfully.")
+        except Exception as ex:
+            return self._error(message=str(ex), code=400)
 
     @http.route(
         "/api/auth/register", type="http", auth="public", methods=["POST"], csrf=False
