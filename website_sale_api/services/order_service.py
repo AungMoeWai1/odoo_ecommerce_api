@@ -94,9 +94,9 @@ class OrderService(PaginationService):
             """Extract field value from dict or object."""
             if isinstance(order, dict):
                 value = order.get(field)
-                return value[index] if value else None
+                return value if value else None
             obj = getattr(order, field, None)
-            return obj.name if obj else None
+            return (obj.id, obj.name) if obj else None
 
         return OrderData(
             id=order["id"],
@@ -104,8 +104,9 @@ class OrderService(PaginationService):
             reference=order["reference"],
             date_order=order["date_order"],
             status=order["state"],
-            currency=get_field("currency_id"),
-            delivery_status=get_field("shipping_status_id"),
+            currency=get_field("currency_id")[1],
+            delivery_status=get_field("shipping_status_id")[1],
+            delivery_status_id=get_field("shipping_status_id", 0)[0],
             total=order["amount_total"],
             item_count=len(order["order_line"]),
         )
