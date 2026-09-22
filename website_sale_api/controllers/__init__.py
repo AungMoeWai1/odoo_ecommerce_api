@@ -21,4 +21,5 @@ from . import (
     ribbon,
     wishlist,
     shipping_status,
+    term_conditions,
 )

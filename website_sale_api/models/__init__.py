@@ -15,4 +15,5 @@ from . import (
     sale_order,
     shipping_status,
     website_promotion_popup,
+    website,
 )

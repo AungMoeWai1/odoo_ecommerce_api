@@ -29,6 +29,7 @@
         "views/product_banner_views.xml",
         "views/res_user_views.xml",
         "views/website_promotion_popup_views.xml",
+        "views/website_views.xml",
     ],
     "assets": {
         "web.assets_frontend": [

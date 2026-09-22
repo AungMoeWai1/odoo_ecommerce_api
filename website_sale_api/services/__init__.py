@@ -23,4 +23,5 @@ from . import (
     ribbon_service,
     token_service,
     wishlist_service,
+    term_condition_service,
 )
