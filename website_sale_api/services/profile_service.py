@@ -18,22 +18,25 @@ class ProfileService(BaseService):
 
     def get_profile(self, user):
         """Get user profile information"""
-        partner = user.partner_id
+        p = user.partner_id
+
+        def get(obj, attr):
+            return getattr(getattr(obj, attr, None), "id", None)
 
         return ProfileResponse(
             id=user.id,
             login=user.login,
             name=user.name,
-            email=partner.email,
-            phone=partner.phone,
-            street=partner.street,
-            city=partner.city,
-            country_id=partner.country_id.id if partner.country_id else None,
-            state_id=partner.state_id.id if partner.state_id else None,
-            township_id=partner.township_id.id if partner.township_id else None,
-            partner_id=partner.id,
-            company_id=partner.company_id.id,
-            company_name=partner.company_id.name,
+            email=p.email,
+            phone=p.phone or None,
+            street=p.street or None,
+            city=p.city or None,
+            country_id=get(p, "country_id"),
+            state_id=get(p, "state_id"),
+            township_id=get(p, "township_id"),
+            partner_id=p.id,
+            company_id=p.company_id.name or None,
+            company_name=p.company_id.name or None,
             image_url=self._get_image_url(self.model_name, user.id, size="image_1024"),
         )
 

@@ -17,5 +17,5 @@ from . import (
     promotion_schema,
     review_schema,
     ribbon_schema,
-    shipping_status_schema
+    shipping_status_schema,
 )

@@ -20,5 +20,5 @@ from . import (
     reviews,
     ribbon,
     wishlist,
-    shipping_status
+    shipping_status,
 )

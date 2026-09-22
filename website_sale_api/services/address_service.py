@@ -58,14 +58,14 @@ class ShippingAddressService(BaseService):
                     id=address.id,
                     name=address.name,
                     email=address.email,
-                    phone=address.phone,
-                    street=address.street,
-                    city=address.city,
-                    zip=address.zip,
-                    type=address.type,
-                    country=address.country_id.id,
-                    state=address.state_id.id,
-                    township=address.township_id.id,
+                    phone=address.phone or None,
+                    street=address.street or None,
+                    city=address.city or None,
+                    zip=address.zip or None,
+                    type=address.type or None,
+                    country=address.country_id.id or None,
+                    state=address.state_id.id or None,
+                    township=address.township_id.id or None,
                 )
             )
         return ShippingAddressResponse(addresses=addresses)

@@ -90,23 +90,26 @@ class OrderService(PaginationService):
     def _format_order(self, order) -> OrderData:
         """Convert raw product data to ProductData schema."""
 
-        def get_field(field, index=1):
-            """Extract field value from dict or object."""
+        def get_field(field):
+            """Return (id, name) for a m2o field, or (None, None)."""
             if isinstance(order, dict):
                 value = order.get(field)
-                return value if value else None
-            obj = getattr(order, field, None)
-            return (obj.id, obj.name) if obj else None
+                return value if isinstance(value, (tuple, list)) else (None, None)
 
+            obj = getattr(order, field, None)
+            return (obj.id, obj.name) if obj else (None, None)
+
+        shipping_id, shipping_name = get_field("shipping_status_id")
+        _, currency_name = get_field("currency_id")
         return OrderData(
             id=order["id"],
             name=order["name"],
             reference=order["reference"],
             date_order=order["date_order"],
             status=order["state"],
-            currency=get_field("currency_id")[1],
-            delivery_status=get_field("shipping_status_id")[1],
-            delivery_status_id=get_field("shipping_status_id", 0)[0],
+            currency=currency_name,
+            delivery_status=shipping_name,
+            delivery_status_id=shipping_id,
             total=order["amount_total"],
             item_count=len(order["order_line"]),
         )
