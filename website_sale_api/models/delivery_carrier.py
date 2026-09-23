@@ -11,6 +11,7 @@ class DeliveryCarrier(models.Model):
     _inherit = "delivery.carrier"
 
     township_ids = fields.Many2many("res.township", string="Townships")
+    free_township_amount = fields.Boolean(string="Free Township Amount")
 
     def get_delivery_method(self, order_sudo):
         """Get wishlist for partner base on website"""
@@ -39,10 +40,11 @@ class DeliveryCarrier(models.Model):
         if result.get("success", False) and order.partner_shipping_id:
             # Add township price
             township_price = order.partner_shipping_id.township_id.price or 0.0
-            result["price"] += township_price
-            # Update carrier_price to reflect the change
-            if "carrier_price" in result:
-                result["carrier_price"] += township_price
+            if not self.free_township_amount:
+                result["price"] += township_price
+                # Update carrier_price to reflect the change
+                if "carrier_price" in result:
+                    result["carrier_price"] += township_price
 
         return result
 

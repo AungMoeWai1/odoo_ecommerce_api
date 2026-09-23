@@ -14,6 +14,10 @@
                        force_save="1"
                        options="{'no_create': True}"/>
             </xpath>
+            <xpath expr="/form//field[@name='tracking_url']" position="after">
+                <field name="free_township_amount"
+                       help="The township amount will not added in the delivery method cost."/>
+            </xpath>
         </field>
     </record>
 </odoo>
