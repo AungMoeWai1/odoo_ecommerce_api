@@ -57,6 +57,7 @@ class InvoiceService(PaginationService):
             ("partner_id", "child_of", partner.id),
             ("website_id", "=", website_id),
             ("move_type", "=", "out_invoice"),
+            ("state", "=", "posted"),
         ]
         return domain
 

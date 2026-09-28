@@ -46,8 +46,10 @@ class OrderService(PaginationService):
         """Retrieve a single sale order by ID."""
         partner = user.partner_id
 
-        self.default_domain = self._get_order_domain(partner, self.website.id)
-        self.default_domain.append(("id", "=", order_id))
+        self.default_domain = self._get_order_domain(partner, self.website.id) + [
+            ("id", "=", order_id),
+            ("state", "=", "sale"),
+        ]
         order = self.search()
         if order:
             return self.format_order_detail(order)
