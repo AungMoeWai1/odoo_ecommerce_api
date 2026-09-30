@@ -22,4 +22,5 @@ from . import (
     wishlist,
     shipping_status,
     term_conditions,
+    company
 )

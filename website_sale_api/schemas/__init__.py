@@ -18,4 +18,5 @@ from . import (
     review_schema,
     ribbon_schema,
     shipping_status_schema,
+    company_schema
 )

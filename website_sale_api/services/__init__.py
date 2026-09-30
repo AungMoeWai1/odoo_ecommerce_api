@@ -24,4 +24,5 @@ from . import (
     token_service,
     wishlist_service,
     term_condition_service,
+    company_service
 )

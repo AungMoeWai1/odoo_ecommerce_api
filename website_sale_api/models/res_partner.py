@@ -20,3 +20,11 @@ class ResPartner(models.Model):
         # Add township_id to the list of writable fields
         result.update({"township_id"})
         return result
+
+    def _can_return_content(self, field_name=None, access_token=None):
+        """Field to allow to read without login"""
+        if field_name in [
+            "image_256"
+        ]:
+            return True
+        return super()._can_return_content(field_name, access_token)

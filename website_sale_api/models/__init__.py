@@ -12,6 +12,7 @@ from . import (
     res_partner,
     res_township,
     res_users,
+    res_company,
     sale_order,
     shipping_status,
     website_promotion_popup,
