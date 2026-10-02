@@ -2,9 +2,11 @@
 
 # pylint:disable=too-many-instance-attributes
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, Generic, List, Optional, TypeVar
 
 from .pagination import PaginatedResponse
+
+ProductItem = TypeVar("ProductItem")
 
 
 @dataclass
@@ -53,5 +55,5 @@ class DetailProductData:
 
 
 @dataclass
-class ProductResponse(PaginatedResponse[ProductData]):
-    """Response schema for Product model"""
+class ProductResponse(PaginatedResponse[ProductItem], Generic[ProductItem]):
+    """Paginated response schema for product and variant data."""

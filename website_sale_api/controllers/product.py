@@ -25,6 +25,20 @@ class ProductAPI(BaseAPI):
         return self._success(result, wrap_in_data=True)
 
     @http.route(
+        "/api/special_products",
+        type="http",
+        auth="public",
+        methods=["GET"],
+        csrf=False,
+    )
+    @ApiKeyService.api_key_required()
+    def get_special_products(self, **kwargs):
+        """Retrieve products currently discounted on the website shop."""
+        result = ProductService().get_discounted_products(kwargs)
+
+        return self._success(result, wrap_in_data=True)
+
+    @http.route(
         "/api/products/<int:product_id>",
         type="http",
         auth="public",
