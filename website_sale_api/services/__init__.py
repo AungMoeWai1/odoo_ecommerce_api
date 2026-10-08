@@ -8,7 +8,7 @@ from . import (
     cart_service,
     category_service,
     checkout_service,
-    shipping_status_service,
+    company_service,
     delivery_method_service,
     invoice_service,
     noti_message_service,
@@ -21,8 +21,8 @@ from . import (
     promotion_service,
     review_service,
     ribbon_service,
+    shipping_status_service,
+    term_condition_service,
     token_service,
     wishlist_service,
-    term_condition_service,
-    company_service
 )

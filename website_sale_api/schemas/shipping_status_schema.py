@@ -7,5 +7,5 @@ from dataclasses import dataclass
 class ShippingStatusSchema:
     """Schema for shipping status response"""
 
-    id: int
+    key: str
     name: str

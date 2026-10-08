@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="shipping_status_id"/>
+                <field name="shipping_status" readonly="1"/>
             </xpath>
         </field>
     </record>

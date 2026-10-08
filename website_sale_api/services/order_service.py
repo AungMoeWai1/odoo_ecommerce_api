@@ -24,6 +24,10 @@ class OrderService(PaginationService):
         self.model_name = "sale.order"
         self.website = self._get_current_website()
 
+    def _get_selection_map(self, field):
+        """Return {key: label} for a selection field of the current model."""
+        return dict(self._get_model().fields_get([field])[field]["selection"])
+
     def get_orders(self, user, kwargs):
         """Retrieve a list of sale orders with pagination."""
         partner = user.partner_id
@@ -31,9 +35,10 @@ class OrderService(PaginationService):
         self.default_domain = self._get_order_domain(partner, self.website.id)
 
         paginated_data = self.get_paginated_from_kwargs(kwargs)
+        shipping_map = self._get_selection_map("shipping_status")
 
         return OrderDataResponse(
-            data=[self._format_order(o) for o in paginated_data["data"]],
+            data=[self._format_order(o, shipping_map) for o in paginated_data["data"]],
             size=paginated_data["size"],
             total=paginated_data["total"],
             page=paginated_data["page"],
@@ -59,13 +64,14 @@ class OrderService(PaginationService):
         domain = [
             ("partner_id", "=", partner.id),
             ("website_id", "=", website_id),
-            ("state", "=", "sale"),
+            ("state", "!=", "draft"),
         ]
         return domain
 
     def format_order_detail(self, order):
         """Format order detail data."""
-        order_data = self._format_order(order)
+        shipping_map = self._get_selection_map("shipping_status")
+        order_data = self._format_order(order, shipping_map)
         return OrderDetailData(
             **asdict(order_data),
             customer_id=order.partner_id.id,
@@ -89,7 +95,7 @@ class OrderService(PaginationService):
             )
         return orderlines
 
-    def _format_order(self, order) -> OrderData:
+    def _format_order(self, order, shipping_map) -> OrderData:
         """Convert raw product data to ProductData schema."""
 
         def get_field(field):
@@ -101,7 +107,6 @@ class OrderService(PaginationService):
             obj = getattr(order, field, None)
             return (obj.id, obj.name) if obj else (None, None)
 
-        shipping_id, shipping_name = get_field("shipping_status_id")
         _, currency_name = get_field("currency_id")
         return OrderData(
             id=order["id"],
@@ -110,8 +115,8 @@ class OrderService(PaginationService):
             date_order=order["date_order"],
             status=order["state"],
             currency=currency_name,
-            delivery_status=shipping_name,
-            delivery_status_id=shipping_id,
+            shipping_status=order["shipping_status"],
+            shipping_status_value=shipping_map.get(order["shipping_status"], ""),
             total=order["amount_total"],
             item_count=len(order["order_line"]),
         )

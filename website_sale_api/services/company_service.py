@@ -16,15 +16,20 @@ class CompanyService(BaseService):
 
     def get_company_information(self):
         """Get company information"""
-        self.default_domain = ([("id", "=", self.website.company_id.id)])
+        self.default_domain = [("id", "=", self.website.company_id.id)]
         company = self.search()
 
-        address = ", ".join(filter(None, [
-            company.street,
-            company.township_id.name,
-            company.city,
-            company.country_id.name,
-        ]))
+        address = ", ".join(
+            filter(
+                None,
+                [
+                    company.street,
+                    company.township_id.name,
+                    company.city,
+                    company.country_id.name,
+                ],
+            )
+        )
 
         return CompanyResponse(
             id=company.id,
@@ -34,11 +39,14 @@ class CompanyService(BaseService):
             email=company.email,
             website=company.website,
             address=address,
-            social=SocialSchema(social_twitter=company.social_twitter,
-                                social_facebook=company.social_facebook,
-                                social_github=company.social_github,
-                                social_linkedin=company.social_linkedin,
-                                social_youtube=company.social_youtube,
-                                social_tiktok=company.social_tiktok,
-                                social_discourse=company.social_discord)
+            social=SocialSchema(
+                social_twitter=company.social_twitter,
+                social_facebook=company.social_facebook,
+                social_github=company.social_github,
+                social_linkedin=company.social_linkedin,
+                social_youtube=company.social_youtube,
+                social_instagram=company.social_instagram,
+                social_tiktok=company.social_tiktok,
+                social_discourse=company.social_discord,
+            ),
         )

@@ -9,7 +9,7 @@
         <td name="order_amount_total" position="before">
             <td class="text-end" name="order_shipping_status">
                 <span>
-                    <t t-out="order.shipping_status_id.name"/>
+                    <span t-field="order.shipping_status"/>
                 </span>
             </td>
         </td>

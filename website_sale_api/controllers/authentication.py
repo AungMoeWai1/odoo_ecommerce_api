@@ -3,6 +3,7 @@ registration, profile retrieval, and password management."""
 
 # pylint:disable=too-few-public-methods,import-error,broad-exception-caught,protected-access
 import json
+
 from odoo import http
 from odoo.exceptions import AccessDenied, ValidationError
 from odoo.http import request

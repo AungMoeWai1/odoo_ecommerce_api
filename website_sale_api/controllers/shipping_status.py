@@ -5,8 +5,8 @@ from odoo import http
 from odoo.exceptions import ValidationError
 
 from ..services.api_key_service import ApiKeyService
-from ..services.token_service import JWTService
 from ..services.shipping_status_service import ShippingStatusService
+from ..services.token_service import JWTService
 from .base import BaseAPI
 
 

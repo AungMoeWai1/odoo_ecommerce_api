@@ -6,6 +6,7 @@ from . import (
     banner_schema,
     cart_schema,
     category_schema,
+    company_schema,
     delivery_method_schema,
     invoice_schema,
     noti_message_schema,
@@ -18,5 +19,4 @@ from . import (
     review_schema,
     ribbon_schema,
     shipping_status_schema,
-    company_schema
 )

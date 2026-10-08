@@ -1,16 +1,12 @@
 """Service for handling product-related business logic."""
 
-# pylint:disable=import-error,protected-access
+# pylint:disable=import-error,protected-access,too-many-locals
 from typing import Any, Dict, List
 
 from odoo import fields
 from odoo.tools import html2plaintext
 
-from ..schemas.product_schema import (
-    ProductData,
-    ProductResponse,
-    ProductVariantData,
-)
+from ..schemas.product_schema import ProductData, ProductResponse, ProductVariantData
 from .pagination_service import PaginationService
 
 
@@ -84,8 +80,10 @@ class ProductService(PaginationService):
     def _get_website_pricelist_rules(self):
         """Return the pricing rules for the current website pricelist."""
         pricelist = self._get_price_list(self.website)
-        return self.env["product.pricelist.item"].sudo().search(
-            [("pricelist_id", "=", pricelist.id)]
+        return (
+            self.env["product.pricelist.item"]
+            .sudo()
+            .search([("pricelist_id", "=", pricelist.id)])
         )
 
     def _get_discounted_template_prices(self, rules) -> Dict[int, Dict[str, Any]]:
@@ -95,8 +93,10 @@ class ProductService(PaginationService):
 
         domain = self._get_pricelist_candidate_domain(rules)
         templates = self.env["product.template"].sudo().search(domain)
-        variants = self.env["product.product"].sudo().search(
-            [("product_tmpl_id", "in", templates.ids)]
+        variants = (
+            self.env["product.product"]
+            .sudo()
+            .search([("product_tmpl_id", "in", templates.ids)])
         )
         pricelist = self._get_price_list(self.website)
         currency = self.website.currency_id.with_context(self.env.context)
@@ -139,9 +139,11 @@ class ProductService(PaginationService):
 
         template_ids = rules.mapped("product_tmpl_id").ids
         template_ids += rules.mapped("product_id.product_tmpl_id").ids
-        category_ids = rules.filtered(
-            lambda rule: rule.applied_on == "2_product_category"
-        ).mapped("categ_id").ids
+        category_ids = (
+            rules.filtered(lambda rule: rule.applied_on == "2_product_category")
+            .mapped("categ_id")
+            .ids
+        )
 
         candidate_domains = []
         if template_ids:
@@ -234,11 +236,7 @@ class ProductService(PaginationService):
     ) -> Dict[str, Any]:
         """Build displayed price and discount details from a matched rule."""
         price_before_discount = price
-        if (
-            rule
-            and rule.compute_price == "formula"
-            and rule._show_discount_on_shop()
-        ):
+        if rule and rule.compute_price == "formula" and rule._show_discount_on_shop():
             price_before_discount = rule._compute_price_before_discount(
                 product=product,
                 quantity=1.0,

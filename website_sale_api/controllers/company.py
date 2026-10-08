@@ -3,7 +3,6 @@
 # pylint:disable=too-few-public-methods,import-error
 
 from odoo import http
-from odoo.http import request
 
 from ..services.api_key_service import ApiKeyService
 from ..services.company_service import CompanyService

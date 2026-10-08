@@ -8,6 +8,7 @@ from . import (
     cart,
     category,
     checkout,
+    company,
     delivery_method,
     invoice,
     message_notification,
@@ -19,8 +20,7 @@ from . import (
     promotion,
     reviews,
     ribbon,
-    wishlist,
     shipping_status,
     term_conditions,
-    company
+    wishlist,
 )

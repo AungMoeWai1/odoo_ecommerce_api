@@ -30,8 +30,8 @@ class OrderData:
     name: str
     status: str
     currency: str
-    delivery_status_id: int
-    delivery_status: str
+    shipping_status_value: str
+    shipping_status: str
     total: float
     item_count: int
 
