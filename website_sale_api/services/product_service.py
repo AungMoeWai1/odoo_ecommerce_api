@@ -166,7 +166,7 @@ class ProductService(PaginationService):
             name=variant.display_name,
             description=html2plaintext(variant.description_ecommerce),
             allow_out_of_stock_order=variant.allow_out_of_stock_order,
-            price=variant.lst_price,
+            price=variant.list_price,
             sale_price=pricelist_info["price"],
             discount_amount=pricelist_info["discount_amount"],
             discount_type=pricelist_info["discount_type"],
@@ -248,7 +248,7 @@ class ProductService(PaginationService):
             discount_amount = rule.percent_price
         elif rule and rule.compute_price == "fixed":
             original_price = product.currency_id._convert(
-                product.lst_price,
+                product.list_price,
                 currency,
                 company=self.env.company,
                 date=fields.Date.context_today(product),
