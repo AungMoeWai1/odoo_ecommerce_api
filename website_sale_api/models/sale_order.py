@@ -14,9 +14,9 @@ class SaleOrder(models.Model):
         [
             ("draft", "Draft"),
             ("confirm", "Order Confirmed"),
-            ("pick", "Pick"),
-            ("pack", "Pack"),
-            ("out", "Delivery Order"),
+            ("pick", "Picked"),
+            ("pack", "Packed"),
+            ("out", "Delivered"),
             ("cancel", "Cancelled"),
         ],
         default="draft",
