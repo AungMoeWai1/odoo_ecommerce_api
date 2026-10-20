@@ -4,7 +4,6 @@
 from typing import Any, Dict, List
 
 from odoo import fields
-from odoo.tools import html2plaintext
 
 from ..schemas.product_schema import ProductData, ProductResponse, ProductVariantData
 from .pagination_service import PaginationService
@@ -164,7 +163,7 @@ class ProductService(PaginationService):
         return ProductVariantData(
             id=variant.id,
             name=variant.display_name,
-            description=html2plaintext(variant.description_ecommerce),
+            description=variant.description_ecommerce,
             allow_out_of_stock_order=variant.allow_out_of_stock_order,
             price=variant.list_price,
             sale_price=pricelist_info["price"],

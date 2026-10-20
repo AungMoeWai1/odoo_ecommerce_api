@@ -26,6 +26,7 @@ class ProductVariantService(ProductService):
             "rating_count",
             "product_template_attribute_value_ids",
             "product_tmpl_id",
+            "description_ecommerce",
             "allow_out_of_stock_order",
             "alternative_product_ids",
             "image_1024",
