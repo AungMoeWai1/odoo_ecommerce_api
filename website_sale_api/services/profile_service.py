@@ -69,3 +69,19 @@ class ProfileService(BaseService):
             self._write(user, {"image_1920": image_base64})
 
         return {"id": user.id, "message": "Profile Image updated successfully"}
+
+    def delete_profile_user(self, user):
+        """Delete user profile information"""
+        if not user.exists():
+            raise ValidationError("User does not exist")
+
+        # Prevent deleting the admin
+        if user.id == self.env.ref("base.user_admin").id:
+            raise ValidationError("Cannot delete admin")
+
+        # Allow deletion only for Portal users
+        if not user.has_group("base.group_portal"):
+            raise ValidationError("Only portal users can be deleted")
+
+        user.sudo().unlink()
+        return {"id": user.id, "message": "User is deleted successfully"}

@@ -72,6 +72,24 @@ class AuthController(BaseAPI):
         )
 
     @http.route(
+        "/api/auth/user/delete",
+        methods=["DELETE"],
+        type="http",
+        auth="none",
+        csrf=False,
+    )
+    @ApiKeyService.api_key_required()
+    @JWTService.jwt_required()
+    def delete_user(self):
+        """Upload profile image for the current user"""
+
+        user = request.authenticated_user
+        try:
+            return self._success(ProfileService().delete_profile_user(user=user))
+        except Exception as ex:
+            return self._error(message=str(ex), code=400)
+
+    @http.route(
         "/api/auth/request_reset_password",
         type="http",
         auth="public",
