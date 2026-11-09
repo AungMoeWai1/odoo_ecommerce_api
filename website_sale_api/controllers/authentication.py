@@ -27,11 +27,17 @@ class AuthController(BaseAPI):
         """Authenticate user and return JWT token"""
         user = AuthService().authenticate_user()
 
-        if not user:
-            return self._error(message="Login & Password Incorrect!", code=401)
+        if isinstance(user, str):
+            return self._error(message=user, code=401)
 
-        token = JWTService.generate_token(user=user)
-        return self._success(AuthResponse(token=token))
+        if isinstance(user, Exception):
+            return self._error(
+                message="Password Incorrect",
+                code=500
+            )
+        else:
+            token = JWTService.generate_token(user=user)
+            return self._success(AuthResponse(token=token))
 
     @http.route(
         "/api/auth/device_token",

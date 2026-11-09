@@ -21,11 +21,21 @@ class AuthService(BaseService):
         """Authenticate user and return user record"""
         try:
             data = json.loads(request.httprequest.data)
+            login = data.get("login")
+            password = data.get("password")
+
+            if not login or not password:
+                return "Login and password are required"
+            # Check whether the user exists
+            user = self._get_user_by_login(login)
+
+            if not user:
+                return "User does not exist"
             auth = self._authenticate(data["login"], data["password"])
             self.update_mobile_token(data, auth["uid"])
             return {"uid": auth["uid"], "login": data["login"]}
-        except Exception:
-            return False
+        except Exception as ex:
+            return ex
 
     def create_user(self):
         """Create a new portal user and authenticate"""
