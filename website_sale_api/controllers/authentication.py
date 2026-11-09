@@ -82,9 +82,16 @@ class AuthController(BaseAPI):
     @JWTService.jwt_required()
     def delete_user(self):
         """Upload profile image for the current user"""
-
         user = request.authenticated_user
+        data = json.loads(request.httprequest.data)
         try:
+            credential = {
+                "login": user.login,
+                "password": data.get("password"),
+                "type": "password",
+            }
+            request.env["res.users"].authenticate(credential, {"interactive": False})
+
             return self._success(ProfileService().delete_profile_user(user=user))
         except Exception as ex:
             return self._error(message=str(ex), code=400)
