@@ -27,14 +27,11 @@ class AuthController(BaseAPI):
         """Authenticate user and return JWT token"""
         user = AuthService().authenticate_user()
 
-        if isinstance(user, str):
+        if isinstance(user, str): # pylint: disable=no-else-return
             return self._error(message=user, code=401)
 
-        if isinstance(user, Exception):
-            return self._error(
-                message="Password Incorrect",
-                code=500
-            )
+        elif isinstance(user, Exception):
+            return self._error(message="Password Incorrect", code=400)
         else:
             token = JWTService.generate_token(user=user)
             return self._success(AuthResponse(token=token))
@@ -65,17 +62,20 @@ class AuthController(BaseAPI):
     def register(self):
         """Create a new user and return JWT token"""
 
-        user = AuthService().create_user()
+        try:
+            user = AuthService().create_user()
 
-        ProfileService().update_partner_country(user["uid"])
+            ProfileService().update_partner_country(user["uid"])
 
-        token = JWTService.generate_token(user=user)
+            token = JWTService.generate_token(user=user)
 
-        return self._success(
-            AuthResponse(
-                token=token,
+            return self._success(
+                AuthResponse(
+                    token=token,
+                )
             )
-        )
+        except Exception as _:
+            return self._error(message="User already exist.", code=400)
 
     @http.route(
         "/api/auth/user/delete",
